@@ -37,6 +37,9 @@ Vertaisarvioinneissa kielenä voi olla pythonin lisäksi c++.
 
 ## Viitteet
 [Shunting Yard Algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm)
+
 [Postfix Notation](https://simple.wikipedia.org/wiki/Postfix_notation)
+
 [Thompson's Construction](https://en.wikipedia.org/wiki/Thompson%2527s_construction)
+
 [Nondeterministic Finite Automaton](https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton)
