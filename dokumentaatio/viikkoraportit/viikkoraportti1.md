@@ -32,5 +32,5 @@
 | **Päivä**        | **Käytetty aika** | **Kuvaus**                                                   |
 |--------------|---------------|----------------------------------------------------------|
 | 12.3.        | 5h            | Aiheeseen perehtyminen, Projektin alustus, Dokumentaatio |
-| 14.3.        | 1h            | Dokumentaatio                                            |
+| 14.3.        | 1,5h            | Dokumentaatio                                            |
 | **Yhteensä:** |     **6h**    |                                                          |
