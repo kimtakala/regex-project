@@ -10,7 +10,7 @@
 -   Algoritmeihin perehdytty
 
 #### Miten ohjelma on edistynyt?
-- Suunnitelmien mukaan - hyvin.
+- Projekti on alustettu.
 
 #### Mitä opin tällä viikolla / tänään?
 - Opin että RegEx:in opettelu voi olla mielenkiintoista.
@@ -27,4 +27,7 @@
 
 
 #### Käytetyt tunnit:
-**5,5**
+
+
+
+**6**
