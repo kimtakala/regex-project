@@ -2,9 +2,7 @@
 name = "regex-project"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "kimtakala",email = "kim.takala@hotmail.com"}
-]
+authors = ["kimtakala <kim.takala@hotmail.com>"]
 readme = "README.md"
 package-mode = false
 
