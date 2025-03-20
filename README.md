@@ -1,5 +1,7 @@
 # _RegEx_-Tulkki
 
+[![codecov](https://codecov.io/github/kimtakala/regex-project/graph/badge.svg?token=J0KEHXVSRQ)](https://codecov.io/github/kimtakala/regex-project)
+
 Tämä on "_Aineopintojen harjoitustyö: Algoritmit ja tekoäly_" -kurssin projekti, jonka aiheena on _RegEx_-tulkin toteutus. Projektillani pyrin ratkaisemaan säännöllisten lausekkeiden (regular expressions) tulkinnan tehokkaasti.
 
 ## Dokumentaatio:
