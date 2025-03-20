@@ -1,4 +1,4 @@
-[project]
+[tool.poetry]
 name = "regex-project"
 version = "0.1.0"
 description = ""
@@ -6,10 +6,10 @@ authors = [
     {name = "kimtakala",email = "kim.takala@hotmail.com"}
 ]
 readme = "README.md"
-requires-python = "^3.10"
-dependencies = [
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = "^3.10"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
