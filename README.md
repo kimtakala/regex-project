@@ -1,6 +1,6 @@
 # _RegEx_-Tulkki
 
-[![GitHub](https://github.com/kimtakala/regex-project/actions/workflows/codecov.yml/badge.svg)](https://github.com/kimtakala/regex-project/actions)
+[![GitHub CI](https://github.com/kimtakala/regex-project/actions/workflows/github_CI.yml/badge.svg)](https://github.com/kimtakala/regex-project/actions)
 [![Codecov](https://codecov.io/github/kimtakala/regex-project/graph/badge.svg?token=J0KEHXVSRQ)](https://codecov.io/github/kimtakala/regex-project)
 
 Tämä on "_Aineopintojen harjoitustyö: Algoritmit ja tekoäly_" -kurssin projekti, jonka aiheena on _RegEx_-tulkin toteutus. Projektillani pyrin ratkaisemaan säännöllisten lausekkeiden (regular expressions) tulkinnan tehokkaasti.
