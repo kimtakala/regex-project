@@ -33,17 +33,18 @@ a+? a{{2,}}?	ota mahdollisimman vähän
 ab|cd	        vastaa ab tai cd \
 """
 
+
 def loop():
     while True:
-        regex = input(f'Syötä säännöllinen lauseke tarkistaaksesi RegEx, tai jätä tyhjäksi päästäksesi ohjeisiin: ')
-        
+        regex = input(
+            f"Syötä säännöllinen lauseke tarkistaaksesi RegEx, tai jätä tyhjäksi päästäksesi ohjeisiin: "
+        )
+
         if regex:
             pass
         else:
-            print(f'{GUIDE}')
+            print(f"{GUIDE}")
 
-
- 
 
 if __name__ == "__main__":
     pass
