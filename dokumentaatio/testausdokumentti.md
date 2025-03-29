@@ -17,6 +17,10 @@ Tämä dokumentti määrittelee Helsingin Yliopiston Tietojenkäsittelytieteen k
 | src/tests/test_state_machine.py           | 51    | 1    | 98%   | 129                                      |
 | **TOTAL**                                 | 186   | 41   | 78%   | -                                        |
 
+## Pylint score:
+
+Your code has been rated at 9.64/10
+
 ## Mitä on Testattu ja miten?
 
 ### state_machine.py
