@@ -1,3 +1,7 @@
+"""
+This is the main program.
+"""
+
 from services.shunting_yard.state_machine import StateMachine
 
 GUIDE = """\
@@ -37,9 +41,13 @@ ab|cd	        vastaa ab tai cd \
 
 
 def loop():
+    """
+    This is the main loop.
+    """
     while True:
         regex = input(
-            f"Syötä säännöllinen lauseke tarkistaaksesi RegEx, tai jätä tyhjäksi päästäksesi ohjeisiin: "
+            "Syötä säännöllinen lauseke tarkistaaksesi RegEx, \
+            tai jätä tyhjäksi päästäksesi ohjeisiin: "
         )
 
         if regex:

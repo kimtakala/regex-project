@@ -40,7 +40,8 @@ from itertools import islice
 
 class UnicodeEscapeLength(Enum):
     """
-    This is the total length of the escaped unicode string including the x/u/U, and the backslash "\\"
+    This is the total length of the escaped unicode string
+    including the x/u/U, and the backslash "\\"
     """
 
     STANDARD_ESCAPE_LENGTH = 2  # e.g. \n, \\
@@ -173,19 +174,18 @@ class StateMachine:
 
             return token
 
-        except IndexError:
+        except IndexError as exc:
             if not escape_sequence_length:
                 raise ValueError(
                     'input string cannot end in a backslash "\\"'
                     "Should add a test for it other than the walrus operator"
-                )
-            else:
-                raise ValueError(
-                    f'Unexpected end of input for escape sequence "\\{escape_type}" at index {self.i}. '
-                    f"Expected length: {escape_sequence_length}."
-                    f"Input: {self.input_string}\n"
-                    f"{' ' * (7 + self.i)}{'^' * len(token)}"
-                )
+                ) from exc
+            raise ValueError(
+                f'Unexpected end of input for escape sequence "\\{escape_type}" at index {self.i}. '
+                f"Expected length: {escape_sequence_length}."
+                f"Input: {self.input_string}\n"
+                f"{' ' * (7 + self.i)}{'^' * len(token)}"
+            ) from exc
 
     def __handle_square_brackets(self):
         """
@@ -239,7 +239,7 @@ class StateMachine:
                             token += symbol
                             token += next_symbol
                             break
-                        elif len(token) > 1 and token[-1] != "[":
+                        if len(token) > 1 and token[-1] != "[":
                             # Ensure "-" is between two valid characters
                             if (
                                 token[-1] in valid_range_characters
@@ -299,11 +299,11 @@ class StateMachine:
                         token += symbol
                         break
 
-            except StopIteration:
-                raise ValueError("Squarebracket character set was not closed!")
+            except StopIteration as exc:
+                raise ValueError("Squarebracket character set was not closed!") from exc
 
-            except IndexError:
-                raise ValueError("Squarebracket character set was not closed!")
+            except IndexError as exc:
+                raise ValueError("Squarebracket character set was not closed!") from exc
 
         return token
 
