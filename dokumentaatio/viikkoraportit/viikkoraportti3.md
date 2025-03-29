@@ -40,5 +40,5 @@
 | ------------- | ----------------- | --------------------------------------------------------------------------- |
 | 26.3.         | 2h               | escape sequence toteutus |
 | 27.3.         | 6,5h               | escape sequence toteutus, square bracket toteutus, testaus toteutus |
-| 29.3.         | 1,5h               | testaus toteutus, dokumentaatio |
-| **Yhteensä:** | **10h**           |                                                                             |
+| 29.3.         | 2h               | testaus toteutus, dokumentaatio |
+| **Yhteensä:** | **10,5h**           |                                                                             |
