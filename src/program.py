@@ -1,4 +1,6 @@
-GUIDE = f"""\
+from services.shunting_yard.state_machine import StateMachine
+
+GUIDE = """\
 Merkkiluokat:
 .	        mikä tahansa merkki paitsi rivinvaihto
 \\w \\d \\s	sana, numero, välilyönti (word, digit, whitespace)
@@ -41,10 +43,12 @@ def loop():
         )
 
         if regex:
-            pass
+            sm = StateMachine(regex)
+            sm.tokenize()
+            print(sm.tokens)
         else:
             print(f"{GUIDE}")
 
 
 if __name__ == "__main__":
-    pass
+    loop()
