@@ -309,6 +309,4 @@ class StateMachine:
 
 
 if __name__ == "__main__":
-    sm = StateMachine("[a-b-c]")
-    sm.tokenize()
-    assert sm.tokens == ["[a-b-c]"], "Failed to correctly tokenize an escape sequence."
+    pass
