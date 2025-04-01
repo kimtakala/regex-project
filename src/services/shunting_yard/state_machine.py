@@ -36,6 +36,12 @@ ab|cd	match ab or cd
 import string
 from enum import Enum
 from itertools import islice
+from .exceptions import (
+    EscapeSequenceEndError,
+    EscapeSequenceLengthError,
+    EndsWithBackslashError,
+    UnclosedGroupError,
+)
 
 
 class UnicodeEscapeLength(Enum):
@@ -152,7 +158,7 @@ class StateMachine:
 
             # Validate the length of the escape sequence
             if len(token) < escape_sequence_length:
-                raise ValueError(
+                raise EscapeSequenceLengthError(
                     f'Incomplete escape sequence "\\{escape_type}" at index {self.i}. '
                     f"Expected length: {escape_sequence_length}, but got {len(token)}."
                     f"Input: {self.input_string}\n"
@@ -165,8 +171,8 @@ class StateMachine:
 
         except IndexError as exc:
             if not escape_sequence_length:
-                raise ValueError('input string cannot end in a backslash "\\"') from exc
-            raise ValueError(
+                raise EndsWithBackslashError('input string cannot end in a backslash "\\"') from exc
+            raise EscapeSequenceEndError(
                 f'Unexpected end of input for escape sequence "\\{escape_type}" at index {self.i}. '
                 f"Expected length: {escape_sequence_length}."
                 f"Input: {self.input_string}\n"
@@ -284,10 +290,10 @@ class StateMachine:
                         break
 
             except StopIteration as exc:
-                raise ValueError("Squarebracket character set was not closed!") from exc
+                raise UnclosedGroupError("Squarebracket character set was not closed!") from exc
 
             except IndexError as exc:
-                raise ValueError("Squarebracket character set was not closed!") from exc
+                raise UnclosedGroupError("Squarebracket character set was not closed!") from exc
 
         return token
 
@@ -312,10 +318,7 @@ class StateMachine:
                 match symbol:
 
                     case "\\":
-                        try:
-                            token += self.__handle_escape_sequence()
-                        except ValueError as exc:
-                            raise ValueError("Invalid escape sequence in capture group") from exc
+                        token += self.__handle_escape_sequence()
 
                     case "(":
                         token += self.__handle_capture_group()
@@ -328,7 +331,7 @@ class StateMachine:
                         token += symbol
 
             except StopIteration as exc:
-                raise ValueError("Capture Group was not closed!") from exc
+                raise UnclosedGroupError("Capture Group was not closed!") from exc
 
             except Exception as exc:
                 raise NotImplementedError("Unexpected error occurred!") from exc

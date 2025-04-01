@@ -3,7 +3,14 @@ This is a test file for the StateMachine.
 """
 
 import pytest
+import re
 from src import StateMachine
+from . import (
+    EndsWithBackslashError,
+    EscapeSequenceEndError,
+    EscapeSequenceLengthError,
+    UnclosedGroupError,
+)
 
 
 def test_escape_sequence():
@@ -76,7 +83,7 @@ def test_square_brackets_unclosed():
     Test that unclosed square brackets raise a ValueError.
     """
     sm = StateMachine("[abc")
-    with pytest.raises(ValueError, match=r"Squarebracket character set was not closed!"):
+    with pytest.raises(UnclosedGroupError, match=r"Squarebracket character set was not closed!"):
         sm.tokenize()
 
 
@@ -109,7 +116,9 @@ def test_backslash_at_end():
     Test that a backslash at the end of the input string raises a ValueError.
     """
     sm = StateMachine("abc\\")
-    with pytest.raises(ValueError, match=r"input string cannot end in a backslash"):
+    with pytest.raises(
+        EndsWithBackslashError, match=re.escape('input string cannot end in a backslash "\\"')
+    ):
         sm.tokenize()
 
 
@@ -182,7 +191,7 @@ def test_capture_group_unclosed():
     Test that an unclosed capture group (e.g., (abc) raises a ValueError.
     """
     sm = StateMachine("(abc")
-    with pytest.raises(ValueError, match=r"Capture Group was not closed!"):
+    with pytest.raises(UnclosedGroupError, match=r"Capture Group was not closed!"):
         sm.tokenize()
 
 
@@ -209,7 +218,7 @@ def test_capture_group_with_backslash_at_end():
     Test that a capture group ending with a backslash (e.g., (abc\\)) raises a ValueError.
     """
     sm = StateMachine("(abc\\)")
-    with pytest.raises(ValueError, match=r"Capture Group was not closed!"):
+    with pytest.raises(UnclosedGroupError, match=r"Capture Group was not closed!"):
         sm.tokenize()
 
 
