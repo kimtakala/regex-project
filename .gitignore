@@ -2,4 +2,5 @@
 .DS_Store
 *.backup
 __pycache__
-.local/*
+.local/
+*cache*
