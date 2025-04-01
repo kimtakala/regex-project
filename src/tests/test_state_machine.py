@@ -6,6 +6,7 @@ import pytest
 import re
 from src import StateMachine
 from . import (
+    StateMachineError,
     EndsWithBackslashError,
     EscapeSequenceEndError,
     EscapeSequenceLengthError,
@@ -24,11 +25,11 @@ def test_escape_sequence():
 
 def test_incomplete_escape_sequence():
     """
-    Test that incomplete escape sequences raise a ValueError.
+    Test that incomplete escape sequences raise a StateMachineError.
     """
     sm = StateMachine("\\x1")
     with pytest.raises(
-        ValueError,
+        StateMachineError,
         match=r'Invalid escape sequence "\\\\x1" at index 0. Expected hexadecimal characters.',
     ):
         sm.tokenize()
@@ -80,7 +81,7 @@ def test_square_brackets_with_dash():
 
 def test_square_brackets_unclosed():
     """
-    Test that unclosed square brackets raise a ValueError.
+    Test that unclosed square brackets raise a UnclosedGroupError.
     """
     sm = StateMachine("[abc")
     with pytest.raises(UnclosedGroupError, match=r"Squarebracket character set was not closed!"):
@@ -113,7 +114,7 @@ def test_square_brackets_unclosed():
 
 def test_backslash_at_end():
     """
-    Test that a backslash at the end of the input string raises a ValueError.
+    Test that a backslash at the end of the input string raises a EndsWithBackslashError.
     """
     sm = StateMachine("abc\\")
     with pytest.raises(
@@ -140,11 +141,11 @@ def test_backslash_at_end():
 
 def test_invalid_range_in_square_brackets():
     """
-    Test that invalid ranges in square brackets (e.g., [a-b-c]) raise a ValueError.
+    Test that invalid ranges in square brackets (e.g., [a-b-c]) raise a StateMachineError.
     """
     sm = StateMachine("[a-b-c]")
     with pytest.raises(
-        ValueError,
+        StateMachineError,
         match=r"Invalid range: 'b-c' uses a range character with an already used range.",
     ):
         sm.tokenize()
@@ -188,7 +189,7 @@ def test_capture_group_with_escape_sequence():
 
 def test_capture_group_unclosed():
     """
-    Test that an unclosed capture group (e.g., (abc) raises a ValueError.
+    Test that an unclosed capture group (e.g., (abc) raises a UnclosedGroupError.
     """
     sm = StateMachine("(abc")
     with pytest.raises(UnclosedGroupError, match=r"Capture Group was not closed!"):
@@ -215,7 +216,7 @@ def test_capture_group_with_special_characters():
 
 def test_capture_group_with_backslash_at_end():
     """
-    Test that a capture group ending with a backslash (e.g., (abc\\)) raises a ValueError.
+    Test that a capture group ending with a backslash (e.g., (abc\\)) raises a UnclosedGroupError.
     """
     sm = StateMachine("(abc\\)")
     with pytest.raises(UnclosedGroupError, match=r"Capture Group was not closed!"):

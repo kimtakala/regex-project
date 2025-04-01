@@ -37,6 +37,7 @@ import string
 from enum import Enum
 from itertools import islice
 from .exceptions import (
+    StateMachineError,
     EscapeSequenceEndError,
     EscapeSequenceLengthError,
     EndsWithBackslashError,
@@ -62,7 +63,7 @@ class StateMachine:
     \\ escapes the special character after it.
     ^ is always accepted as in the start of a string it is an achor and otherwise it's a literal.
     $ likewise, except end of a string.
-    +*? are also literals when not in a specific location.
+    +*?| are also literals when not in a specific location.
     """
 
     def __init__(self, input_string: str):
@@ -72,7 +73,7 @@ class StateMachine:
         self.tokens = []
         self.input_string_length = len(input_string)
         self.literals = string.ascii_letters + "." + string.digits
-        self.unconditional_characters = string.ascii_letters + ".$^+*?" + string.digits
+        self.unconditional_characters = string.ascii_letters + ".$^+*?|" + string.digits
         self.input_iterable = iter(enumerate(self.input_string))
 
     @property
@@ -148,7 +149,7 @@ class StateMachine:
                     char in string.hexdigits
                     for char in self.input_string[self.i : self.i + escape_sequence_length]
                 ):
-                    raise ValueError(
+                    raise StateMachineError(
                         f'Invalid escape sequence "\\{self.input_string[self.i : self.i + escape_sequence_length]}" '
                         f"at index {self.i}. Expected hexadecimal characters."
                     )
@@ -217,7 +218,7 @@ class StateMachine:
                             if self.input_string[self.i + 1] != "]":
                                 token += symbol
                             else:
-                                raise ValueError(
+                                raise StateMachineError(
                                     '"^" cannot be the only character in a character set!'
                                 )
                         else:
@@ -263,14 +264,14 @@ class StateMachine:
                                         self.i - 2 in nonindependent_character_indices
                                         or self.i in nonindependent_character_indices
                                     ):
-                                        raise ValueError(
+                                        raise StateMachineError(
                                             f"Invalid range: '{token[-1]}-{next_symbol}' uses a range character with an already used range."
                                         )
                                     nonindependent_character_indices.extend([self.i - 2, self.i])
                                     token += symbol
                                     token += next_symbol
                                 else:
-                                    raise ValueError(
+                                    raise StateMachineError(
                                         f"Invalid range: '{token[-1]}-{next_symbol}' is not a valid range."
                                     )
                             else:
@@ -298,7 +299,61 @@ class StateMachine:
         return token
 
     def __handle_curly_brackets(self):
-        pass
+        """
+        Implementation:
+        Cheat Sheet:
+        a{5} a{2,}	exactly five, two or more
+        a{1,3}	between one & three
+        a+? a{2,}?	match as few as possible
+        """
+
+        token = self.symbol
+        comma_used = False
+
+        i = 0
+        while True:
+            try:
+                self.i, symbol = next(self.input_iterable)
+                i += 1
+
+                match symbol:
+
+                    case "}":
+                        token += symbol
+                        break
+
+                    case ",":
+                        if i == 1:
+                            raise StateMachineError(
+                                "Quantifier braces cannot start with a comma!\
+                                    Ensure the format is {{n}} or {n,m}, where n and m are integers."
+                            )
+                        next_i, next_symbol = next(self.input_iterable)
+                        if next_symbol == "}":
+                            token += symbol, next_symbol
+                            break
+                        if next_symbol not in string.digits:
+                            raise StateMachineError(
+                                f'The symbol "{next_symbol}" can not be included in quantifier braces.'
+                            )
+                        if comma_used:
+                            raise StateMachineError(
+                                "Quantifier braces cannot include multiple commas!"
+                            )
+                        comma_used = True
+
+                    case _ if symbol in string.digits:
+                        token += symbol
+
+                    case _:
+                        raise StateMachineError(
+                            f'The symbol "{symbol}" can not be included in quantifier braces.'
+                        )
+
+            except Exception:
+                pass
+
+        return token
 
     def __handle_capture_group(self):
         """
