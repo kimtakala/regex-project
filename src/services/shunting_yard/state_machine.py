@@ -53,6 +53,10 @@ class UnicodeEscapeLength(Enum):
 class StateMachine:
     """
     This is a state machine.
+    \\ escapes the special character after it.
+    ^ is always accepted as in the start of a string it is an achor and otherwise it's a literal.
+    $ likewise, except end of a string.
+    +*? are also literals when not in a specific location.
     """
 
     def __init__(self, input_string: str):
@@ -61,7 +65,8 @@ class StateMachine:
         self.symbol: str = None
         self.tokens = []
         self.input_string_length = len(input_string)
-        self.unconditional_characters = string.ascii_letters + "." + string.digits
+        self.literals = string.ascii_letters + "." + string.digits
+        self.unconditional_characters = string.ascii_letters + ".$^+*?" + string.digits
         self.input_iterable = iter(enumerate(self.input_string))
 
     @property
@@ -81,46 +86,20 @@ class StateMachine:
                     case "\\":
                         self.tokens.append(self.__handle_escape_sequence())
 
-                    case _ if self.symbol in self.unconditional_characters:
-                        self.tokens.append(self.symbol)
-
                     case "[":
                         self.tokens.append(self.__handle_square_brackets())
 
-                    case "^":
-                        pass
-                        """ if i == 0:
-                            pass
-                        elif self.input_string[i - 1] == "[":
-                            pass
-                        else:
-                            self.tokens.append(self.symbol) """
-
-                    case "$":
-                        pass
-                        """ if i == (self.input_string_length - 1):
-                            pass
-                        else:
-                            self.tokens.append(self.symbol) """
+                    case "{":
+                        self.tokens.append(self.__handle_curly_brackets())
 
                     case "(":
-                        # Logic for a capture group
-                        pass
+                        self.tokens.append(self.__handle_capture_group())
 
-                    case "*":
-                        pass
-
-                    case "+":
-                        pass
-
-                    case "?":
-                        pass
-
-                    case "{":
-                        pass
+                    case _ if self.symbol in self.unconditional_characters:
+                        self.tokens.append(self.symbol)
 
                     case _:
-                        pass
+                        raise NotImplementedError(f"Unrecognized symbol: {self.symbol}")
 
             except StopIteration:
                 break
@@ -153,11 +132,21 @@ class StateMachine:
 
         try:
             escape_sequence_length = escape_sequence_lengths.get(
-                escape_type := self.input_string[
-                    self.i + 1
-                ],  # defining the escape type
+                escape_type := self.input_string[self.i + 1],  # defining the escape type
                 UnicodeEscapeLength.STANDARD_ESCAPE_LENGTH.value,
             )
+
+            # Validate escape sequence characters
+            if escape_sequence_length >= UnicodeEscapeLength.HEX.value:
+                if not all(
+                    char in string.hexdigits
+                    for char in self.input_string[self.i : self.i + escape_sequence_length]
+                ):
+                    raise ValueError(
+                        f'Invalid escape sequence "\\{self.input_string[self.i : self.i + escape_sequence_length]}" '
+                        f"at index {self.i}. Expected hexadecimal characters."
+                    )
+
             # build the token
             token = self.input_string[self.i : self.i + escape_sequence_length]
 
@@ -176,10 +165,7 @@ class StateMachine:
 
         except IndexError as exc:
             if not escape_sequence_length:
-                raise ValueError(
-                    'input string cannot end in a backslash "\\"'
-                    "Should add a test for it other than the walrus operator"
-                ) from exc
+                raise ValueError('input string cannot end in a backslash "\\"') from exc
             raise ValueError(
                 f'Unexpected end of input for escape sequence "\\{escape_type}" at index {self.i}. '
                 f"Expected length: {escape_sequence_length}."
@@ -274,9 +260,7 @@ class StateMachine:
                                         raise ValueError(
                                             f"Invalid range: '{token[-1]}-{next_symbol}' uses a range character with an already used range."
                                         )
-                                    nonindependent_character_indices.extend(
-                                        [self.i - 2, self.i]
-                                    )
+                                    nonindependent_character_indices.extend([self.i - 2, self.i])
                                     token += symbol
                                     token += next_symbol
                                 else:
@@ -304,6 +288,50 @@ class StateMachine:
 
             except IndexError as exc:
                 raise ValueError("Squarebracket character set was not closed!") from exc
+
+        return token
+
+    def __handle_curly_brackets(self):
+        pass
+
+    def __handle_capture_group(self):
+        """
+        Implementation:
+        All characters inside a capture group are considered valid.
+        Capture group is considered valid as long as it doesn't end in a backslash "\\"
+        """
+
+        token = self.symbol
+
+        i = 0
+        while True:
+            try:
+                self.i, symbol = next(self.input_iterable)
+                i += 1
+
+                match symbol:
+
+                    case "\\":
+                        try:
+                            token += self.__handle_escape_sequence()
+                        except ValueError as exc:
+                            raise ValueError("Invalid escape sequence in capture group") from exc
+
+                    case "(":
+                        token += self.__handle_capture_group()
+
+                    case ")":
+                        token += symbol
+                        break
+
+                    case _:
+                        token += symbol
+
+            except StopIteration as exc:
+                raise ValueError("Capture Group was not closed!") from exc
+
+            except Exception as exc:
+                raise NotImplementedError("Unexpected error occurred!") from exc
 
         return token
 
