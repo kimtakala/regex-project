@@ -1,38 +1,3 @@
-r"""
-Cheat Sheet
-
-Character classes
-.	any character except newline            ✅
-\w \d \s	word, digit, whitespace         ✅
-\W \D \S	not word, digit, whitespace     ✅
-[abc]	any of a, b, or c                   ✅
-[^abc]	not a, b, or c                      ✅
-[a-g]	character between a & g             ✅
-
-Anchors
-^abc$	start / end of the string           ✅
-\b	word boundary                           ✅
-
-Escaped characters
-\. \* \\	escaped special characters      ✅
-\t \n \r	tab, linefeed, carriage return  ✅
-\u00a9	unicode escaped ©                   ✅
-
-Groups & Lookaround
-(abc)	capture group                       ✅
-\1	backreference to group #1               ✅
-(?:abc)	non-capturing group                 ✅
-(?=abc)	positive lookahead                  ✅
-(?!abc)	negative lookahead                  ✅
-
-Quantifiers & Alternation
-a* a+ a?	0 or more, 1 or more, 0 or 1    ✅
-a{5} a{2,}	exactly five, two or more       ✅
-a{1,3}	between one & three                 ✅
-a+? a{2,}?	match as few as possible        ✅
-ab|cd	match ab or cd                      ✅
-"""
-
 import string
 from enum import Enum
 from itertools import islice
@@ -44,11 +9,18 @@ from .exceptions import (
     UnclosedGroupError,
 )
 
-
+# Enum for defining the lengths of various Unicode escape sequences
 class UnicodeEscapeLength(Enum):
     """
-    This is the total length of the escaped unicode string
-    including the x/u/U, and the backslash "\\"
+    Enum representing the total length of various Unicode escape sequences.
+    This includes the backslash "\\\\" and the escape type (e.g., "x", "u", "U").
+    It is used to validate and process escape sequences in the input string.
+
+    Attributes:
+        STANDARD_ESCAPE_LENGTH: Length of standard escape sequences (e.g., \\n, \\\).
+        HEX: Length of hexadecimal escape sequences (e.g., \xXX).
+        UNICODE_SHORT: Length of short Unicode escape sequences (e.g., \uXXXX).
+        UNICODE_LONG: Length of long Unicode escape sequences (e.g., \UXXXXXXXX).
     """
 
     STANDARD_ESCAPE_LENGTH = 2  # e.g. \n, \\
@@ -57,7 +29,23 @@ class UnicodeEscapeLength(Enum):
     UNICODE_LONG = 10  # e.g. \UXXXXXXXX
 
 
+# Enum for defining different token types in a regular expression
 class TokenTypes(Enum):
+    """
+    Enum representing the different types of tokens that can be identified
+    in a regular expression. These tokens are used to classify and process
+    parts of the input string during tokenization.
+
+    Attributes:
+        LITERAL: Represents literal characters (e.g., "a", "b", "1").
+        ESCAPE_SEQUENCE: Represents escape sequences (e.g., \\n, \\t).
+        CHARACTER_CLASS: Represents character classes (e.g., [a-z], \d).
+        CAPTURE_GROUP: Represents capture groups (e.g., (abc)).
+        QUANTIFIER: Represents quantifiers (e.g., {1,3}, +, *).
+        DOT: Represents the dot symbol (.) which matches any character.
+        SPECIAL: Represents special symbols (e.g., ^, $, |).
+    """
+
     LITERAL = "Literal"
     ESCAPE_SEQUENCE = "Escape Sequence"
     CHARACTER_CLASS = "Character Class"
@@ -65,18 +53,42 @@ class TokenTypes(Enum):
     QUANTIFIER = "Quantifier"
     DOT = "Dot"
     SPECIAL = "Special Symbol"
+    OTHER = "Other"
 
 
+# StateMachine class for tokenizing and validating regular expressions
 class StateMachine:
     """
-    This is a state machine.
-    \\ escapes the special character after it.
-    ^ is always accepted as in the start of a string it is an achor and otherwise it's a literal.
-    $ likewise, except end of a string.
-    +*?| are also literals when not in a specific location.
+    A state machine for tokenizing and validating regular expressions.
+    This class processes an input string and divides it into tokens based
+    on the rules of regular expressions. It handles escape sequences,
+    character classes, quantifiers, capture groups, and other components.
+
+    Attributes:
+        input_string: The input regular expression string to be tokenized.
+        tokens: A list of tokens identified in the input string.
+        token_types: A list of token types corresponding to the tokens.
+        literals: Characters that are treated as literals by default.
+        special_symbols: Symbols with special meanings in regular expressions.
+        unconditional_characters: Characters that are always valid.
+        quantifier_allowed_preceding_token_types: Token types that can precede quantifiers.
+
+    Methods:
+        tokenize: Divides the input string into tokens.
+        __handle_escape_sequence: Processes escape sequences in the input.
+        __handle_square_brackets: Processes character classes (e.g., [a-z]).
+        __handle_curly_brackets: Processes quantifiers (e.g., {1,3}).
+        __handle_capture_group: Processes capture groups (e.g., (abc)).
     """
 
     def __init__(self, input_string: str):
+        """
+        Initialize the StateMachine with the input string and set up attributes.
+
+        Args:
+            input_string (str): The regular expression string to be tokenized.
+        """
+        # Initialize attributes for processing the input string
         self.__input_string = input_string
         self.i = 0
         self.symbol: str = None
@@ -86,7 +98,7 @@ class StateMachine:
         self.literals = string.ascii_letters + "." + string.digits
         self.special_symbols = "$^+*?|"
         self.unconditional_characters = self.literals + self.special_symbols
-        self.input_iterable = iter(enumerate(self.input_string))
+        self.input_iterable = iter(enumerate(self.input_string))  # Iterable for processing input
         self.quantifier_allowed_preceding_token_types = [
             TokenTypes.LITERAL,
             TokenTypes.CHARACTER_CLASS,
@@ -94,30 +106,44 @@ class StateMachine:
             TokenTypes.DOT,
             TokenTypes.ESCAPE_SEQUENCE,
         ]
+        self.tokenize() # Tokenize the input string.
 
     @property
-    def input_string(self):
-        """Read-only property for input_string."""
+    def input_string(self) -> str:
+        """
+        Getter for the input string.
+
+        Returns:
+            str: The input regular expression string.
+        """
         return self.__input_string
 
     def tokenize(self):
         """
-        Divide the input into tokens.
+        Tokenize the input string into components of the regular expression.
+
+        Raises:
+            NotImplementedError: If an unrecognized symbol is encountered.
+            StateMachineError: If tokenization rules are violated.
         """
         while True:
             try:
+                # Process each character in the input string
                 self.i, self.symbol = next(self.input_iterable)
 
                 match self.symbol:
                     case "\\":
+                        # Handle escape sequences
                         self.tokens.append(self.__handle_escape_sequence())
                         self.token_types.append(TokenTypes.ESCAPE_SEQUENCE)
 
                     case "[":
+                        # Handle character classes
                         self.tokens.append(self.__handle_square_brackets())
                         self.token_types.append(TokenTypes.CHARACTER_CLASS)
 
                     case "{":
+                        # Handle quantifiers
                         if (
                             self.token_types[-1]
                             not in self.quantifier_allowed_preceding_token_types
@@ -129,42 +155,51 @@ class StateMachine:
                         self.token_types.append(TokenTypes.QUANTIFIER)
 
                     case "(":
+                        # Handle capture groups
                         self.tokens.append(self.__handle_capture_group())
                         self.token_types.append(TokenTypes.CAPTURE_GROUP)
 
                     case _ if self.symbol in self.literals:
+                        # Handle literal characters
                         self.tokens.append(self.symbol)
                         self.token_types.append(TokenTypes.LITERAL)
 
                     case _ if self.symbol in self.special_symbols:
+                        # Handle special symbols
                         self.tokens.append(self.symbol)
                         self.token_types.append(TokenTypes.SPECIAL)
 
                     case _:
-                        raise NotImplementedError(f"Unrecognized symbol: {self.symbol}")
+                        # Handle other characters
+                        self.tokens.append(self.symbol)
+                        self.token_types.append(TokenTypes.OTHER)
 
             except StopIteration:
+                # End of input string
                 break
 
-        print(f"input string: {self.input_string} fully tokenized:\n{self.tokens}")
-
-    def __progress_iterable(self, amount: int):
+    def __progress_iterable(self, amount: int) -> None:
         """
-        skip the rest of the token before continuing to process the input string.
+        Advance the input iterable by a specified amount.
+
+        Args:
+            amount (int): The number of steps to skip in the input iterable.
         """
         self.input_iterable = islice(self.input_iterable, amount, None)
         self.i += amount
 
-    def __handle_escape_sequence(self):
+    def __handle_escape_sequence(self) -> str:
         """
-        Implementation:
-        backslash "\\" starts an escape sequence, in most cases the total length is 2,
-        but when it is followed by an "x", a "u" or a capital "U",
-        the escape sequence length becomes 4, 6, or 10 respectively,
-        to accomodate for the appropriate length unicode character
-        representation.
-        In this implementation any character following a backslash apart from
-        the afore mentioned exceptions is considered a valid escaped sequence.
+        Handle escape sequences in the input string.
+        
+        Returns:
+            str: The processed escape sequence token.
+        
+        Raises:
+            StateMachineError: If the escape sequence is invalid.
+            EscapeSequenceLengthError: If the escape sequence is incomplete.
+            EndsWithBackslashError: If the input ends with a backslash.
+            EscapeSequenceEndError: If the escape sequence ends unexpectedly.
         """
 
         escape_sequence_lengths = {
@@ -217,18 +252,16 @@ class StateMachine:
                 f"{' ' * (7 + self.i)}{'^' * len(token)}"
             ) from exc
 
-    def __handle_square_brackets(self):
+    def __handle_square_brackets(self) -> str:
         """
-        implemetation:
-        all unconditional characters allowed,
-        "]" only allowed if preceded by a backslash "\\"
-        "[" always allowed
-        otherwise will end the set
-        "^" only special at the beginning
-        "[^]" not allowed
-        "-" special between "independent" characters
-        "-" non-special at the beginning or end, or after a backslash
-        same rules for "\\" as generally
+        Handle character classes enclosed in square brackets.
+
+        Returns:
+            str: The processed character class token.
+
+        Raises:
+            StateMachineError: If invalid character class rules are violated.
+            UnclosedGroupError: If the character class is not properly closed.
         """
         valid_lowercase_ranges = string.ascii_lowercase
         valid_uppercase_ranges = string.ascii_uppercase
@@ -337,23 +370,27 @@ class StateMachine:
 
     def __handle_curly_brackets(self):
         """
-        Implementation:
-        Cheat Sheet:
-        a{5} a{2,}	exactly five, two or more
-        a{1,3}	between one & three
-        a+? a{2,}?	match as few as possible
+        Handle quantifiers enclosed in curly brackets.
+        
+        Returns:
+            str: The processed quantifier token.
+        
+        Raises:
+            StateMachineError: If invalid quantifier rules are violated.
+            UnclosedGroupError: If the quantifier is not properly closed.
         """
+        token = self.symbol  # Start building the token with the opening curly brace
+        comma_used = False  # Track if a comma has been used in the quantifier
+        previous_number = None  # Store the previous number for range validation
 
-        token = self.symbol
-        comma_used = False
-        previous_number = None
         while True:
             try:
-                self.i, symbol = next(self.input_iterable)
+                self.i, symbol = next(self.input_iterable)  # Get the next character
 
                 match symbol:
 
                     case "}":
+                        # Closing curly brace indicates the end of the quantifier
                         if len(token) == 1:
                             raise StateMachineError(
                                 "Quantifier braces cannot be empty! Ensure the format is {n}, {n,}, or {n,m}."
@@ -362,22 +399,23 @@ class StateMachine:
                         break
 
                     case ",":
+                        # Handle the comma in quantifiers (e.g., {n,} or {n,m})
                         if comma_used:
                             raise StateMachineError(
                                 "Quantifier braces cannot include multiple commas!"
                             )
-
-                        if previous_number == None:
+                        if previous_number is None:
                             raise StateMachineError(
                                 "Quantifier braces cannot start with a comma! Ensure the format is {n} or {n,m}."
                             )
-
                         comma_used = True
                         token += symbol
 
                     case _ if symbol in string.digits:
-                        number = self.__get_number(symbol)
+                        # Handle digits in the quantifier
+                        number = self.__get_number(symbol)  # Extract the full number
                         if comma_used:
+                            # Ensure the range is increasing (e.g., {n,m} where n < m)
                             if previous_number and previous_number >= number:
                                 raise StateMachineError(
                                     "Range specified in quantifier braces must be rising!"
@@ -386,18 +424,20 @@ class StateMachine:
                         previous_number = number
 
                     case _:
+                        # Raise an error for invalid characters in the quantifier
                         raise StateMachineError(
                             f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
                         )
 
             except StopIteration as exc:
+                # Raise an error if the quantifier is not properly closed
                 raise UnclosedGroupError("Quantifier braces were not closed!") from exc
 
         return token
 
     def __get_number(self, initial_digit: str) -> int:
         """
-        Extracts the next number from the input string within quantifier braces.
+        Extract a number from the input string within quantifier braces.
 
         Args:
             initial_digit (str): The first digit of the number.
@@ -409,62 +449,76 @@ class StateMachine:
             UnclosedGroupError: If the quantifier braces are not properly closed.
             StateMachineError: If an invalid symbol is encountered in the braces.
         """
-        digits = [initial_digit]
-        i = self.i
+        digits = [initial_digit]  # Start building the number with the initial digit
+        i = self.i  # Track the current index
+
         while i + 1 < self.input_string_length:
             i += 1
-            symbol = self.input_string[i]
+            symbol = self.input_string[i]  # Get the next character
 
             if symbol in ",}":
+                # Stop parsing if a comma or closing brace is encountered
                 break
 
             if symbol not in string.digits:
+                # Raise an error for invalid characters in the number
                 raise StateMachineError(
                     f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
                 )
 
-            self.i, _ = next(self.input_iterable)
-            digits.append(symbol)
+            self.i, _ = next(self.input_iterable)  # Advance the iterator
+            digits.append(symbol)  # Add the digit to the list
 
         else:
+            # Raise an error if the quantifier braces are not properly closed
             raise UnclosedGroupError("Quantifier braces were not closed!")
 
-        return int("".join(digits))
+        return int("".join(digits))  # Convert the list of digits to an integer
 
     def __handle_capture_group(self):
         """
-        Implementation:
-        All characters inside a capture group are considered valid.
-        Capture group is considered valid as long as it doesn't end in a backslash "\\"
+        Handle capture groups enclosed in parentheses.
+
+        Returns:
+            str: The processed capture group token.
+
+        Raises:
+            UnclosedGroupError: If the capture group is not properly closed.
+            NotImplementedError: If an unexpected error occurs.
         """
+        token = self.symbol  # Start building the token with the opening parenthesis
 
-        token = self.symbol
-
-        i = 0
+        i = 0  # Track the position within the capture group
         while True:
             try:
-                self.i, symbol = next(self.input_iterable)
+                self.i, symbol = next(self.input_iterable)  # Get the next character
                 i += 1
 
                 match symbol:
 
                     case "\\":
+                        # Handle escape sequences within the capture group
                         token += self.__handle_escape_sequence()
 
                     case "(":
+                        # Handle nested capture groups
                         token += self.__handle_capture_group()
 
                     case ")":
+                        # Closing parenthesis indicates the end of the capture group
                         token += symbol
                         break
 
                     case _:
+                        # Add other characters to the token
                         token += symbol
 
             except StopIteration as exc:
+                # Raise an error if the capture group is not properly closed
                 raise UnclosedGroupError("Capture Group was not closed!") from exc
 
             except Exception as exc:
+                # Raise an error for unexpected issues
                 raise NotImplementedError("Unexpected error occurred!") from exc
 
         return token
