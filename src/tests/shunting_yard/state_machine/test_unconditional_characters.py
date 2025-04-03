@@ -19,7 +19,6 @@ def test_unconditional_characters():
     Test that unconditional characters (letters, digits, and '.') are correctly tokenized.
     """
     sm = StateMachine("abc123.")
-    sm.tokenize()
     assert sm.tokens == [
         "a",
         "b",
@@ -35,8 +34,7 @@ def test_backslash_at_end():
     """
     Test that a backslash at the end of the input string raises a EndsWithBackslashError.
     """
-    sm = StateMachine("abc\\")
     with pytest.raises(
         EndsWithBackslashError, match=re.escape('input string cannot end in a backslash "\\"')
     ):
-        sm.tokenize()
+        StateMachine("abc\\")

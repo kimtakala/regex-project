@@ -1,4 +1,4 @@
-# Viikko 3
+# Viikko 4
 
 ### Vastaa kysymyksiin:
 
@@ -27,9 +27,8 @@
 
 #### Käytetyt tunnit:
 
-| **Päivä**     | **Käytetty aika** | **Kuvaus**                                              |
-| ------------- | ----------------- | ------------------------------------------------------- |
-| 1.4.          | 3h              | Capture group & quantifier braces toteutus, omien exception klassien luonti |
-| 2.4.          | 0h                | placeholder                                             |
-| 3.4.          | 0h                | placeholder                                             |
-| **Yhteensä:** | **x,x h**          |                                                         |
+| **Päivä**     | **Käytetty aika** | **Kuvaus**                                                                  |
+| ------------- | ----------------- | --------------------------------------------------------------------------- |
+| 1.4.          | 3h                | Capture group & quantifier braces toteutus, omien exception klassien luonti |
+| 3.4.          | 7,5h              | [program.py](../../src/program.py) Toteutus                                 |
+| **Yhteensä:** | **10,5h**         |                                                                             |
