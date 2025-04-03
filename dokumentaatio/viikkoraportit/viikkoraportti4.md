@@ -29,7 +29,7 @@
 
 | **Päivä**     | **Käytetty aika** | **Kuvaus**                                              |
 | ------------- | ----------------- | ------------------------------------------------------- |
-| 1.4.          | 2,5h              | Capture group toteutus, omien exception klassien luonti |
+| 1.4.          | 3h              | Capture group & quantifier braces toteutus, omien exception klassien luonti |
 | 2.4.          | 0h                | placeholder                                             |
 | 3.4.          | 0h                | placeholder                                             |
-| **Yhteensä:** | **2,5h**          |                                                         |
+| **Yhteensä:** | **x,x h**          |                                                         |
