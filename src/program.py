@@ -46,14 +46,13 @@ def loop():
     """
     while True:
         regex = input(
-            "Syötä säännöllinen lauseke tarkistaaksesi RegEx, \
-            tai jätä tyhjäksi päästäksesi ohjeisiin: "
+            "Syötä säännöllinen lauseke tarkistaaksesi RegEx,\
+tai jätä tyhjäksi päästäksesi ohjeisiin: "
         )
 
         if regex:
             sm = StateMachine(regex)
             sm.tokenize()
-            print(sm.tokens)
         else:
             print(f"{GUIDE}")
 
