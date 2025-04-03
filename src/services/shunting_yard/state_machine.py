@@ -57,6 +57,16 @@ class UnicodeEscapeLength(Enum):
     UNICODE_LONG = 10  # e.g. \UXXXXXXXX
 
 
+class TokenTypes(Enum):
+    LITERAL = "Literal"
+    ESCAPE_SEQUENCE = "Escape Sequence"
+    CHARACTER_CLASS = "Character Class"
+    CAPTURE_GROUP = "Capture Group"
+    QUANTIFIER = "Quantifier"
+    DOT = "Dot"
+    SPECIAL = "Special Symbol"
+
+
 class StateMachine:
     """
     This is a state machine.
@@ -71,10 +81,19 @@ class StateMachine:
         self.i = 0
         self.symbol: str = None
         self.tokens = []
+        self.token_types = []
         self.input_string_length = len(input_string)
         self.literals = string.ascii_letters + "." + string.digits
-        self.unconditional_characters = string.ascii_letters + ".$^+*?|" + string.digits
+        self.special_symbols = "$^+*?|"
+        self.unconditional_characters = self.literals + self.special_symbols
         self.input_iterable = iter(enumerate(self.input_string))
+        self.quantifier_allowed_preceding_token_types = [
+            TokenTypes.LITERAL,
+            TokenTypes.CHARACTER_CLASS,
+            TokenTypes.CAPTURE_GROUP,
+            TokenTypes.DOT,
+            TokenTypes.ESCAPE_SEQUENCE,
+        ]
 
     @property
     def input_string(self):
@@ -92,24 +111,42 @@ class StateMachine:
                 match self.symbol:
                     case "\\":
                         self.tokens.append(self.__handle_escape_sequence())
+                        self.token_types.append(TokenTypes.ESCAPE_SEQUENCE)
 
                     case "[":
                         self.tokens.append(self.__handle_square_brackets())
+                        self.token_types.append(TokenTypes.CHARACTER_CLASS)
 
                     case "{":
+                        if (
+                            self.token_types[-1]
+                            not in self.quantifier_allowed_preceding_token_types
+                        ):
+                            raise StateMachineError(
+                                "Quantifier braces must be preceded, by a valid token."
+                            )
                         self.tokens.append(self.__handle_curly_brackets())
+                        self.token_types.append(TokenTypes.QUANTIFIER)
 
                     case "(":
                         self.tokens.append(self.__handle_capture_group())
+                        self.token_types.append(TokenTypes.CAPTURE_GROUP)
 
-                    case _ if self.symbol in self.unconditional_characters:
+                    case _ if self.symbol in self.literals:
                         self.tokens.append(self.symbol)
+                        self.token_types.append(TokenTypes.LITERAL)
+
+                    case _ if self.symbol in self.special_symbols:
+                        self.tokens.append(self.symbol)
+                        self.token_types.append(TokenTypes.SPECIAL)
 
                     case _:
                         raise NotImplementedError(f"Unrecognized symbol: {self.symbol}")
 
             except StopIteration:
                 break
+
+        print(f"input string: {self.input_string} fully tokenized:\n{self.tokens}")
 
     def __progress_iterable(self, amount: int):
         """
@@ -309,51 +346,90 @@ class StateMachine:
 
         token = self.symbol
         comma_used = False
-
-        i = 0
+        previous_number = None
         while True:
             try:
                 self.i, symbol = next(self.input_iterable)
-                i += 1
 
                 match symbol:
 
                     case "}":
+                        if len(token) == 1:
+                            raise StateMachineError(
+                                "Quantifier braces cannot be empty! Ensure the format is {n}, {n,}, or {n,m}."
+                            )
                         token += symbol
                         break
 
                     case ",":
-                        if i == 1:
-                            raise StateMachineError(
-                                "Quantifier braces cannot start with a comma!\
-                                    Ensure the format is {{n}} or {n,m}, where n and m are integers."
-                            )
-                        next_i, next_symbol = next(self.input_iterable)
-                        if next_symbol == "}":
-                            token += symbol, next_symbol
-                            break
-                        if next_symbol not in string.digits:
-                            raise StateMachineError(
-                                f'The symbol "{next_symbol}" can not be included in quantifier braces.'
-                            )
                         if comma_used:
                             raise StateMachineError(
                                 "Quantifier braces cannot include multiple commas!"
                             )
+
+                        if previous_number == None:
+                            raise StateMachineError(
+                                "Quantifier braces cannot start with a comma! Ensure the format is {n} or {n,m}."
+                            )
+
                         comma_used = True
+                        token += symbol
 
                     case _ if symbol in string.digits:
-                        token += symbol
+                        number = self.__get_number(symbol)
+                        if comma_used:
+                            if previous_number and previous_number >= number:
+                                raise StateMachineError(
+                                    "Range specified in quantifier braces must be rising!"
+                                )
+                        token += str(number)
+                        previous_number = number
 
                     case _:
                         raise StateMachineError(
-                            f'The symbol "{symbol}" can not be included in quantifier braces.'
+                            f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
                         )
 
-            except Exception:
-                pass
+            except StopIteration as exc:
+                raise UnclosedGroupError("Quantifier braces were not closed!") from exc
 
         return token
+
+    def __get_number(self, initial_digit: str) -> int:
+        """
+        Extracts the next number from the input string within quantifier braces.
+
+        Args:
+            initial_digit (str): The first digit of the number.
+
+        Returns:
+            int: The complete number parsed from the input.
+
+        Raises:
+            UnclosedGroupError: If the quantifier braces are not properly closed.
+            StateMachineError: If an invalid symbol is encountered in the braces.
+        """
+        digits = [initial_digit]
+        i = self.i
+        while i + 1 < self.input_string_length:
+            i += 1
+            symbol = self.input_string[i]
+
+            if symbol in ",}":
+                break
+
+            if symbol not in string.digits:
+                raise StateMachineError(
+                    f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
+                )
+
+            self.i, _ = next(self.input_iterable)
+            digits.append(symbol)
+
+        else:
+            raise UnclosedGroupError("Quantifier braces were not closed!")
+
+        return int("".join(digits))
 
     def __handle_capture_group(self):
         """
