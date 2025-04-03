@@ -9,6 +9,7 @@ from .exceptions import (
     UnclosedGroupError,
 )
 
+
 # Enum for defining the lengths of various Unicode escape sequences
 class UnicodeEscapeLength(Enum):
     """
@@ -18,9 +19,9 @@ class UnicodeEscapeLength(Enum):
 
     Attributes:
         STANDARD_ESCAPE_LENGTH: Length of standard escape sequences (e.g., \\n, \\\).
-        HEX: Length of hexadecimal escape sequences (e.g., \xXX).
-        UNICODE_SHORT: Length of short Unicode escape sequences (e.g., \uXXXX).
-        UNICODE_LONG: Length of long Unicode escape sequences (e.g., \UXXXXXXXX).
+        HEX: Length of hexadecimal escape sequences (e.g., \\xXX).
+        UNICODE_SHORT: Length of short Unicode escape sequences (e.g., \\uXXXX).
+        UNICODE_LONG: Length of long Unicode escape sequences (e.g., \\UXXXXXXXX).
     """
 
     STANDARD_ESCAPE_LENGTH = 2  # e.g. \n, \\
@@ -106,7 +107,7 @@ class StateMachine:
             TokenTypes.DOT,
             TokenTypes.ESCAPE_SEQUENCE,
         ]
-        self.tokenize() # Tokenize the input string.
+        self.tokenize()  # Tokenize the input string.
 
     @property
     def input_string(self) -> str:
@@ -191,10 +192,10 @@ class StateMachine:
     def __handle_escape_sequence(self) -> str:
         """
         Handle escape sequences in the input string.
-        
+
         Returns:
             str: The processed escape sequence token.
-        
+
         Raises:
             StateMachineError: If the escape sequence is invalid.
             EscapeSequenceLengthError: If the escape sequence is incomplete.
@@ -371,10 +372,10 @@ class StateMachine:
     def __handle_curly_brackets(self):
         """
         Handle quantifiers enclosed in curly brackets.
-        
+
         Returns:
             str: The processed quantifier token.
-        
+
         Raises:
             StateMachineError: If invalid quantifier rules are violated.
             UnclosedGroupError: If the quantifier is not properly closed.
