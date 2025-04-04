@@ -19,16 +19,18 @@
 
 - Tällä viikolla opin käyttämään omia exception luokkia eduksi.
 
-#### Mikä jäi epäselväksi tai tuottanut vaikeuksia?
-
-\-
-
 #### Mitä teen seuraavaksi?
 
 - postfix muoto
 - NFA:n kasaus
 - matchaus
 - virheiden selitys
+
+#### Mikä jäi epäselväksi tai tuottanut vaikeuksia?
+
+- Huomaan nyt että kun sain tokenizaation valmiiksi niin projekti on perjaatteessa toimiva.
+- Huomaan että NFA:n konstruktointi ei ole välttämättä edullista projektille tässä vaiheessa.
+- Olisiko mahdollista ottaa vaikka lyhyt zoom keskustelu ja miettiä projektin vaatimusten uudelleen määrittelyä?
 
 #### Käytetyt tunnit:
 
