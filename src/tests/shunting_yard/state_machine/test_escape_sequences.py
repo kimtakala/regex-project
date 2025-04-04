@@ -6,10 +6,6 @@ import pytest
 from src import StateMachine
 from . import (
     StateMachineError,
-    EndsWithBackslashError,
-    EscapeSequenceEndError,
-    EscapeSequenceLengthError,
-    UnclosedGroupError,
 )
 
 

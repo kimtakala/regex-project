@@ -1,10 +1,11 @@
+"""
+Tests for square brackets in StateMachine
+"""
+
 import pytest
 from src import StateMachine
 from . import (
     StateMachineError,
-    EndsWithBackslashError,
-    EscapeSequenceEndError,
-    EscapeSequenceLengthError,
     UnclosedGroupError,
 )
 

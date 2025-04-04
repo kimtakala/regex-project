@@ -1,3 +1,7 @@
+"""
+This module defines a StateMachine for handling regex syntax and splitting it into tokens.
+"""
+
 import string
 from enum import Enum
 from itertools import islice

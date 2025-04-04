@@ -5,10 +5,6 @@ This is a test file for the StateMachine.
 import pytest
 from src import StateMachine
 from . import (
-    StateMachineError,
-    EndsWithBackslashError,
-    EscapeSequenceEndError,
-    EscapeSequenceLengthError,
     UnclosedGroupError,
 )
 

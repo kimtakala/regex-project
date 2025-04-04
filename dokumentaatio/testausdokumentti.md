@@ -6,16 +6,16 @@ Tämä dokumentti määrittelee Helsingin Yliopiston Tietojenkäsittelytieteen k
 
 ## Kattavuus raportti:
 
-| File                                      | Stmts | Miss | Cover | Missing                                  |
-|-------------------------------------------|-------|------|-------|------------------------------------------
-| src/\_\_init__.py                           | 1     | 0    | 100%  | -                                        |
-| src/program.py                            | 12    | 12   | 0%    | 1-54                                     |
-| src/services/\_\_init__.py                  | 1     | 0    | 100%  | -                                        |
-| src/services/shunting_yard/\_\_init__.py    | 1     | 0    | 100%  | -                                        |
+| File                                        | Stmts | Miss | Cover | Missing                                      |
+| ------------------------------------------- | ----- | ---- | ----- | -------------------------------------------- |
+| src/\_\_init\_\_.py                         | 1     | 0    | 100%  | -                                            |
+| src/program.py                              | 12    | 12   | 0%    | 1-54                                         |
+| src/services/\_\_init\_\_.py                | 1     | 0    | 100%  | -                                            |
+| src/services/shunting_yard/\_\_init\_\_.py  | 1     | 0    | 100%  | -                                            |
 | src/services/shunting_yard/state_machine.py | 120   | 28   | 77%   | 89-122, 183, 228, 239-241, 283-289, 306, 312 |
-| src/tests/\_\_init__.py                     | 0     | 0    | 100%  | -                                        |
-| src/tests/test_state_machine.py           | 51    | 1    | 98%   | 129                                      |
-| **TOTAL**                                 | 186   | 41   | 78%   | -                                        |
+| src/tests/\_\_init\_\_.py                   | 0     | 0    | 100%  | -                                            |
+| src/tests/test_state_machine.py             | 51    | 1    | 98%   | 129                                          |
+| **TOTAL**                                   | 186   | 41   | 78%   | -                                            |
 
 ## Pylint score:
 

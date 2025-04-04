@@ -1,16 +1,12 @@
 """
-This is a test file for the StateMachine.
+This is a test file for the unconditional characters in StateMachine.
 """
 
-import pytest
 import re
+import pytest
 from src import StateMachine
 from . import (
-    StateMachineError,
     EndsWithBackslashError,
-    EscapeSequenceEndError,
-    EscapeSequenceLengthError,
-    UnclosedGroupError,
 )
 
 

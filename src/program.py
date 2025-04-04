@@ -2,6 +2,7 @@
 This is the main program.
 """
 
+import sys
 from sys import stdout
 from time import sleep
 from src import StateMachine
@@ -151,6 +152,10 @@ EXAMPLES = (
 
 
 class Colors:
+    """
+    colors for UI
+    """
+
     PETROL_GREEN = "\033[38;2;0;128;128m"
     LIGHT_GREEN = "\033[38;2;144;238;144m"
     DARK_ORANGE = "\033[38;2;255;140;0m"
@@ -162,6 +167,9 @@ class Colors:
 
 
 def print_title(title):
+    """
+    prints the title
+    """
     sleep(WAIT)
     print(f"{Colors.PETROL_GREEN}\n{'=' * 40}{Colors.ENDC}")
     sleep(WAIT)
@@ -172,6 +180,9 @@ def print_title(title):
 
 
 def print_guide():
+    """
+    prints the guide
+    """
     print(f"\n{Colors.DARK_ORANGE}{'=' * 40}{Colors.ENDC}")
     print(f"{Colors.DARK_ORANGE}{'KÄYTTÖOHJEET':^40}{Colors.ENDC}")
     print(f"{Colors.DARK_ORANGE}{'=' * 40}{Colors.ENDC}")
@@ -179,6 +190,9 @@ def print_guide():
 
 
 def print_examples():
+    """
+    prints the examples
+    """
     print(f"\n{Colors.DARK_ORANGE}{'=' * 40}{Colors.ENDC}")
     print(f"{Colors.DARK_ORANGE}{'ESIMERKIT':^40}{Colors.ENDC}")
     print(f"{Colors.DARK_ORANGE}{'=' * 40}{Colors.ENDC}")
@@ -276,7 +290,7 @@ def loop():
                             print(
                                 f"{Colors.DARK_ORANGE}Ohjelman suoritus päättyy... Moikka!{Colors.ENDC}"
                             )
-                            exit()
+                            sys.exit()
                         else:
                             print(
                                 f'{Colors.DARK_RED}Virheellinen komento. Syötä "o", "e", "." tai tyhjä.{Colors.ENDC}'
