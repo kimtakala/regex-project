@@ -27,8 +27,8 @@
 
 #### Käytetyt tunnit:
 
-| **Päivä**     | **Käytetty aika** | **Kuvaus** |
-| ------------- | ----------------- | ---------- |
-| 11.4.         | 0h                | asd        |
-| 12.4.         | 0h                | asd        |
-| **Yhteensä:** | **0h**            |            |
+| **Päivä**     | **Käytetty aika** | **Kuvaus**                                      |
+| ------------- | ----------------- | ----------------------------------------------- |
+| 11.4.         | 3h                | refaktorointi ja postfix aiheeseen perehtyminen |
+| 12.4.         | 0h                | asd                                             |
+| **Yhteensä:** | **3h**            |                                                 |
