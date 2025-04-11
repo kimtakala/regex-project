@@ -263,8 +263,7 @@ def loop():
 
             if regex:
                 try:
-                    sm = RegexTokenizer(regex)
-                    sm.tokenize()
+                    RegexTokenizer(regex)
                     print(
                         f'{Colors.LIGHT_GREEN}Syöte: "{regex}" noudattaa RegEx syntaksia!{Colors.ENDC}'
                     )

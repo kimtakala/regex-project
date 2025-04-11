@@ -49,6 +49,7 @@ class TokenTypes(Enum):
         QUANTIFIER: Represents quantifiers (e.g., {1,3}, +, *).
         DOT: Represents the dot symbol (.) which matches any character.
         SPECIAL: Represents special symbols (e.g., ^, $, |).
+        IMPLICIT_CONCATENATION: implicit concatenation symbol "‿"
     """
 
     LITERAL = "Literal"
@@ -59,6 +60,7 @@ class TokenTypes(Enum):
     DOT = "Dot"
     SPECIAL = "Special Symbol"
     OTHER = "Other"
+    IMPLICIT_CONCATENATION = "Implicit Concatenation"
 
 
 # RegexTokenizer class for tokenizing and validating regular expressions
@@ -79,7 +81,7 @@ class RegexTokenizer:
         quantifier_allowed_preceding_token_types: Token types that can precede quantifiers.
 
     Methods:
-        tokenize: Divides the input string into tokens.
+        __tokenize: Divides the input string into tokens.
         __handle_escape_sequence: Processes escape sequences in the input.
         __handle_square_brackets: Processes character classes (e.g., [a-z]).
         __handle_curly_brackets: Processes quantifiers (e.g., {1,3}).
@@ -111,7 +113,7 @@ class RegexTokenizer:
             TokenTypes.DOT,
             TokenTypes.ESCAPE_SEQUENCE,
         ]
-        self.tokenize()  # Tokenize the input string.
+        self.__tokenize()  # Tokenize the input string.
 
     @property
     def input_string(self) -> str:
@@ -123,7 +125,7 @@ class RegexTokenizer:
         """
         return self.__input_string
 
-    def tokenize(self):
+    def __tokenize(self):
         """
         Tokenize the input string into components of the regular expression.
 
@@ -530,4 +532,6 @@ class RegexTokenizer:
 
 
 if __name__ == "__main__":
-    pass
+    rt = RegexTokenizer("asd[1-9]*?32(a){5,9}xd")
+    print(rt.tokens)
+    # ['a', 's', 'd', '[1-9]', '*', '?', '3', '2', '(a)', '{5,9}', 'x', 'd']
