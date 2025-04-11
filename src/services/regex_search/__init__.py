@@ -2,5 +2,5 @@
 this is an init file to form an import tree
 """
 
-from .state_machine import StateMachine
+from .regex_tokenizer import RegexTokenizer
 from .exceptions import *

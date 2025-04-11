@@ -1,12 +1,12 @@
 """
-This module defines a StateMachine for handling regex syntax and splitting it into tokens.
+This module defines a RegexTokenizer class for handling regex syntax and splitting it into tokens.
 """
 
 import string
 from enum import Enum
 from itertools import islice
 from .exceptions import (
-    StateMachineError,
+    RegexTokenizerError,
     EscapeSequenceEndError,
     EscapeSequenceLengthError,
     EndsWithBackslashError,
@@ -61,10 +61,10 @@ class TokenTypes(Enum):
     OTHER = "Other"
 
 
-# StateMachine class for tokenizing and validating regular expressions
-class StateMachine:
+# RegexTokenizer class for tokenizing and validating regular expressions
+class RegexTokenizer:
     """
-    A state machine for tokenizing and validating regular expressions.
+    A regex tokenizer for tokenizing and validating regular expressions.
     This class processes an input string and divides it into tokens based
     on the rules of regular expressions. It handles escape sequences,
     character classes, quantifiers, capture groups, and other components.
@@ -88,7 +88,7 @@ class StateMachine:
 
     def __init__(self, input_string: str):
         """
-        Initialize the StateMachine with the input string and set up attributes.
+        Initialize the RegexTokenizer with the input string and set up attributes.
 
         Args:
             input_string (str): The regular expression string to be tokenized.
@@ -129,7 +129,7 @@ class StateMachine:
 
         Raises:
             NotImplementedError: If an unrecognized symbol is encountered.
-            StateMachineError: If tokenization rules are violated.
+            RegexTokenizerError: If tokenization rules are violated.
         """
         while True:
             try:
@@ -153,7 +153,7 @@ class StateMachine:
                             self.token_types[-1]
                             not in self.quantifier_allowed_preceding_token_types
                         ):
-                            raise StateMachineError(
+                            raise RegexTokenizerError(
                                 "Quantifier braces must be preceded, by a valid token."
                             )
                         self.tokens.append(self.__handle_curly_brackets())
@@ -201,7 +201,7 @@ class StateMachine:
             str: The processed escape sequence token.
 
         Raises:
-            StateMachineError: If the escape sequence is invalid.
+            RegexTokenizerError: If the escape sequence is invalid.
             EscapeSequenceLengthError: If the escape sequence is incomplete.
             EndsWithBackslashError: If the input ends with a backslash.
             EscapeSequenceEndError: If the escape sequence ends unexpectedly.
@@ -226,7 +226,7 @@ class StateMachine:
                     char in string.hexdigits
                     for char in self.input_string[self.i : self.i + escape_sequence_length]
                 ):
-                    raise StateMachineError(
+                    raise RegexTokenizerError(
                         f'Invalid escape sequence "\\{self.input_string[self.i : self.i + escape_sequence_length]}" '
                         f"at index {self.i}. Expected hexadecimal characters."
                     )
@@ -265,7 +265,7 @@ class StateMachine:
             str: The processed character class token.
 
         Raises:
-            StateMachineError: If invalid character class rules are violated.
+            RegexTokenizerError: If invalid character class rules are violated.
             UnclosedGroupError: If the character class is not properly closed.
         """
         valid_lowercase_ranges = string.ascii_lowercase
@@ -293,7 +293,7 @@ class StateMachine:
                             if self.input_string[self.i + 1] != "]":
                                 token += symbol
                             else:
-                                raise StateMachineError(
+                                raise RegexTokenizerError(
                                     '"^" cannot be the only character in a character set!'
                                 )
                         else:
@@ -339,14 +339,14 @@ class StateMachine:
                                         self.i - 2 in nonindependent_character_indices
                                         or self.i in nonindependent_character_indices
                                     ):
-                                        raise StateMachineError(
+                                        raise RegexTokenizerError(
                                             f"Invalid range: '{token[-1]}-{next_symbol}' uses a range character with an already used range."
                                         )
                                     nonindependent_character_indices.extend([self.i - 2, self.i])
                                     token += symbol
                                     token += next_symbol
                                 else:
-                                    raise StateMachineError(
+                                    raise RegexTokenizerError(
                                         f"Invalid range: '{token[-1]}-{next_symbol}' is not a valid range."
                                     )
                             else:
@@ -381,7 +381,7 @@ class StateMachine:
             str: The processed quantifier token.
 
         Raises:
-            StateMachineError: If invalid quantifier rules are violated.
+            RegexTokenizerError: If invalid quantifier rules are violated.
             UnclosedGroupError: If the quantifier is not properly closed.
         """
         token = self.symbol  # Start building the token with the opening curly brace
@@ -397,7 +397,7 @@ class StateMachine:
                     case "}":
                         # Closing curly brace indicates the end of the quantifier
                         if len(token) == 1:
-                            raise StateMachineError(
+                            raise RegexTokenizerError(
                                 "Quantifier braces cannot be empty! Ensure the format is {n}, {n,}, or {n,m}."
                             )
                         token += symbol
@@ -406,11 +406,11 @@ class StateMachine:
                     case ",":
                         # Handle the comma in quantifiers (e.g., {n,} or {n,m})
                         if comma_used:
-                            raise StateMachineError(
+                            raise RegexTokenizerError(
                                 "Quantifier braces cannot include multiple commas!"
                             )
                         if previous_number is None:
-                            raise StateMachineError(
+                            raise RegexTokenizerError(
                                 "Quantifier braces cannot start with a comma! Ensure the format is {n} or {n,m}."
                             )
                         comma_used = True
@@ -422,7 +422,7 @@ class StateMachine:
                         if comma_used:
                             # Ensure the range is increasing (e.g., {n,m} where n < m)
                             if previous_number and previous_number >= number:
-                                raise StateMachineError(
+                                raise RegexTokenizerError(
                                     "Range specified in quantifier braces must be rising!"
                                 )
                         token += str(number)
@@ -430,7 +430,7 @@ class StateMachine:
 
                     case _:
                         # Raise an error for invalid characters in the quantifier
-                        raise StateMachineError(
+                        raise RegexTokenizerError(
                             f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
                         )
 
@@ -452,7 +452,7 @@ class StateMachine:
 
         Raises:
             UnclosedGroupError: If the quantifier braces are not properly closed.
-            StateMachineError: If an invalid symbol is encountered in the braces.
+            RegexTokenizerError: If an invalid symbol is encountered in the braces.
         """
         digits = [initial_digit]  # Start building the number with the initial digit
         i = self.i  # Track the current index
@@ -467,7 +467,7 @@ class StateMachine:
 
             if symbol not in string.digits:
                 # Raise an error for invalid characters in the number
-                raise StateMachineError(
+                raise RegexTokenizerError(
                     f'Invalid symbol "{symbol}" in quantifier braces. Only digits and a comma are allowed.'
                 )
 

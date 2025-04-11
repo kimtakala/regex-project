@@ -1,10 +1,10 @@
 """
-This is a test file for the unconditional characters in StateMachine.
+This is a test file for the unconditional characters in RegexTokenizer.
 """
 
 import re
 import pytest
-from src import StateMachine
+from src import RegexTokenizer
 from . import (
     EndsWithBackslashError,
 )
@@ -14,7 +14,7 @@ def test_unconditional_characters():
     """
     Test that unconditional characters (letters, digits, and '.') are correctly tokenized.
     """
-    sm = StateMachine("abc123.")
+    sm = RegexTokenizer("abc123.")
     assert sm.tokens == [
         "a",
         "b",
@@ -33,4 +33,4 @@ def test_backslash_at_end():
     with pytest.raises(
         EndsWithBackslashError, match=re.escape('input string cannot end in a backslash "\\"')
     ):
-        StateMachine("abc\\")
+        RegexTokenizer("abc\\")

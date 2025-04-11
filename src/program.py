@@ -12,7 +12,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.services.shunting_yard.state_machine import StateMachine
+from src.services.regex_search.regex_tokenizer import RegexTokenizer
 
 # Define spacing for alignment
 GUIDE_SPACING = 15
@@ -263,7 +263,7 @@ def loop():
 
             if regex:
                 try:
-                    sm = StateMachine(regex)
+                    sm = RegexTokenizer(regex)
                     sm.tokenize()
                     print(
                         f'{Colors.LIGHT_GREEN}Syöte: "{regex}" noudattaa RegEx syntaksia!{Colors.ENDC}'
