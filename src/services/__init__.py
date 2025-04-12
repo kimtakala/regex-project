@@ -11,3 +11,5 @@ from .regex_search import (
     EscapeSequenceLengthError,
     UnclosedGroupError,
 )
+from .input_string import user_input
+from .postfix import shunting_yard

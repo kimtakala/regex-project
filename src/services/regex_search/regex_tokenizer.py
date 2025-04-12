@@ -49,7 +49,6 @@ class TokenTypes(Enum):
         QUANTIFIER: Represents quantifiers (e.g., {1,3}, +, *).
         DOT: Represents the dot symbol (.) which matches any character.
         SPECIAL: Represents special symbols (e.g., ^, $, |).
-        IMPLICIT_CONCATENATION: implicit concatenation symbol "‿"
     """
 
     LITERAL = "Literal"
@@ -60,7 +59,6 @@ class TokenTypes(Enum):
     DOT = "Dot"
     SPECIAL = "Special Symbol"
     OTHER = "Other"
-    IMPLICIT_CONCATENATION = "Implicit Concatenation"
 
 
 # RegexTokenizer class for tokenizing and validating regular expressions
