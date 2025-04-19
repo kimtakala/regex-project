@@ -1,4 +1,4 @@
-from .exceptions import MismatchedParenthesesError, PostfixError
+from postfix import MismatchedParenthesesError
 
 
 def shunting_yard(infix):
@@ -19,25 +19,15 @@ def shunting_yard(infix):
         elif character == ")":
             while stack and stack[-1] != "(":
                 postfix += stack.pop()
-            if stack and stack[-1] == "(":
-                stack.pop()  # Remove '('
-            else:
+            if not stack or stack[-1] != "(":
                 raise MismatchedParenthesesError("Mismatched parentheses: ')' without matching '('")
+            stack.pop()  # Remove '('
         elif character in specials:
-            while (
-                stack
-                and stack[-1] in specials
-                and (
-                    specials[character] < specials[stack[-1]]
-                    or (specials[character] == specials[stack[-1]] and character in ".*")
-                )
-            ):
+            while stack and stack[-1] in specials and specials[character] < specials[stack[-1]]:
                 postfix += stack.pop()
             stack.append(character)
-        elif character.isalnum():
-            postfix += character
         else:
-            raise PostfixError(f"Invalid character in regex: {character}")
+            postfix += character
 
     while stack:
         if stack[-1] == "(":

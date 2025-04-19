@@ -1,5 +1,6 @@
+from typing import List, Set
 from services import shunting_yard as shunt
-from typing import List
+from .exceptions import InvalidRegexError, EmptyRegexError
 
 
 class State:
@@ -19,9 +20,9 @@ class NondeterministicFiniteAutomaton:
 nfa = NondeterministicFiniteAutomaton
 
 
-def follow_es(initial_state) -> set[State]:
+def follow_es(initial_state) -> Set[State]:
     """
-    Follow epsilon transitions
+    Follow epsilon transitions from a state and return all reachable states
     """
     states = set()
     stack = [initial_state]
@@ -39,12 +40,21 @@ def follow_es(initial_state) -> set[State]:
 
 
 def compileRegex(postfix):
+    """
+    Compile a postfix regex expression into an NFA
+    """
     nfa_stack: List[nfa] = []
+
+    # Handle empty regex
+    if not postfix:
+        raise EmptyRegexError("The provided regex is empty.")
 
     for character in postfix:
         match character:
 
             case "*":
+                if not nfa_stack:
+                    raise InvalidRegexError("Invalid regex: * operator with no operand")
 
                 nfa1 = nfa_stack.pop()
                 initial_state = State()
@@ -56,6 +66,8 @@ def compileRegex(postfix):
                 nfa_stack.append(nfa(initial_state, accept_state))
 
             case ".":
+                if len(nfa_stack) < 2:
+                    raise InvalidRegexError("Invalid regex: . operator requires two operands")
 
                 nfa2 = nfa_stack.pop()
                 nfa1 = nfa_stack.pop()
@@ -63,6 +75,8 @@ def compileRegex(postfix):
                 nfa_stack.append(nfa(nfa1.initial_state, nfa2.accept_state))
 
             case "|":
+                if len(nfa_stack) < 2:
+                    raise InvalidRegexError("Invalid regex: | operator requires two operands")
 
                 nfa2 = nfa_stack.pop()
                 nfa1 = nfa_stack.pop()
@@ -75,6 +89,8 @@ def compileRegex(postfix):
                 nfa_stack.append(nfa(initial_state, accept_state))
 
             case "+":
+                if not nfa_stack:
+                    raise InvalidRegexError("Invalid regex: + operator with no operand")
 
                 nfa1 = nfa_stack.pop()
                 initial_state = State()
@@ -85,6 +101,8 @@ def compileRegex(postfix):
                 nfa_stack.append(nfa(initial_state, accept_state))
 
             case "?":
+                if not nfa_stack:
+                    raise InvalidRegexError("Invalid regex: ? operator with no operand")
 
                 nfa1 = nfa_stack.pop()
                 initial_state = State()
@@ -94,50 +112,61 @@ def compileRegex(postfix):
                 nfa1.accept_state.edge1 = accept_state
                 nfa_stack.append(nfa(initial_state, accept_state))
 
-            case _:
+            case "(" | ")":
+                raise InvalidRegexError("Parentheses should not appear in postfix notation.")
 
+            case _:
                 # Literal character
                 initial_state = State(character)
                 accept_state = State()
                 initial_state.edge1 = accept_state
                 nfa_stack.append(nfa(initial_state, accept_state))
 
+    if len(nfa_stack) != 1:
+        raise InvalidRegexError(
+            f"Invalid regex: too many operands left on stack ({len(nfa_stack)})"
+        )
+
     return nfa_stack.pop()
 
 
 def matchRegex(infix, string):
+    """
+    Match a string against a regex pattern
+    """
+    # Convert infix to postfix
     postfix = shunt(infix)
-    # Uncomment the next line to see the postfix expression
-    # print("Postfix:", postfix)
 
-    nfa = compileRegex(postfix)
+    # Handle empty regex
+    if not postfix:
+        if string == "":
+            return True
+        raise EmptyRegexError("The provided regex is empty.")
 
-    current_states = set(follow_es(nfa.initial_state))
-    future_states = set()
+    # Build the NFA
+    nfa_result = compileRegex(postfix)
 
-    for character in string:
+    # Start with the initial state and follow all epsilon transitions
+    current_states = follow_es(nfa_result.initial_state)
+
+    # Process each character in the string
+    for c in string:
+        next_states = set()
+
+        # For each current state
         for state in current_states:
-            if state.label == character:
-                next_states = follow_es(state.edge1)
-                future_states.update(next_states)
-        current_states = future_states
-        future_states = set()
+            # If this state has a matching label
+            if state.label == c:
+                # Add states reachable through epsilon transitions after consuming the character
+                if state.edge1:
+                    next_states.update(follow_es(state.edge1))
 
-    return nfa.accept_state in current_states
+        # Update current states
+        current_states = next_states
 
+        # If we have no valid states, matching fails
+        if not current_states:
+            return False
 
-def main():
-    infixes = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b)*.c"]
-    strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
-
-    for infix in infixes:
-        for string in strings:
-            if not string:
-                string = '""'
-            result = matchRegex(infix, string)
-            print(("True " if result else "False ") + infix + " " + string)
-        print()
-
-
-if __name__ == "__main__":
-    main()
+    # Check if any current state is an accept state
+    return nfa_result.accept_state in current_states
