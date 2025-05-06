@@ -59,7 +59,7 @@ def test_shunting_yard_multiple_operators():
     """
     Test that the shunting yard algorithm handles multiple operators correctly.
     """
-    assert shunting_yard("a|b.c*") == "ab|c.*", "Failed to handle multiple operators."
+    assert shunting_yard("a|b.c*") == "abc*.|", "Failed to handle multiple operators."
 
 
 def test_shunting_yard_invalid_input():
