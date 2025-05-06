@@ -23,6 +23,7 @@ jobs:
         run: |
           pip install poetry
           poetry install
+          pip install -e .
 
       - name: Run tests with coverage
         env:
