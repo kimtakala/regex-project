@@ -110,3 +110,71 @@ def test_compile_regex_invalid_characters():
     """
     with pytest.raises(InvalidRegexError, match="Invalid regex: .*"):
         compileRegex("a[b")
+
+
+def test_compile_regex_invalid_concatenation():
+    """
+    Test that invalid usage of the concatenation operator (.) raises InvalidRegexError.
+    """
+    with pytest.raises(InvalidRegexError, match="Invalid regex: .* operator requires two operands"):
+        compileRegex("a.")
+
+    with pytest.raises(InvalidRegexError, match="Invalid regex: .* operator requires two operands"):
+        compileRegex(".a")
+
+
+def test_compile_regex_invalid_plus_operator():
+    """
+    Test that invalid usage of the plus operator (+) raises InvalidRegexError.
+    """
+    with pytest.raises(InvalidRegexError, match="Invalid regex: \\+ operator with no operand"):
+        compileRegex("+")
+
+
+def test_compile_regex_invalid_question_operator():
+    """
+    Test that invalid usage of the question mark operator (?) raises InvalidRegexError.
+    """
+    with pytest.raises(InvalidRegexError, match="Invalid regex: \\? operator with no operand"):
+        compileRegex("?")
+
+
+def test_compile_regex_invalid_parentheses():
+    """
+    Test that parentheses in postfix notation raise InvalidRegexError.
+    """
+    with pytest.raises(
+        InvalidRegexError, match="Parentheses should not appear in postfix notation."
+    ):
+        compileRegex("(")
+
+    with pytest.raises(
+        InvalidRegexError, match="Parentheses should not appear in postfix notation."
+    ):
+        compileRegex(")")
+
+
+def test_match_regex_question_operator():
+    """
+    Test that patterns with the question mark (?) operator are correctly matched by the NFA.
+    """
+    assert matchRegex("a.b?", "a"), "Failed to match valid string with ? operator."
+    assert matchRegex("a.b?", "ab"), "Failed to match valid string with ? operator."
+    assert not matchRegex("a.b?", "abb"), "Incorrectly matched invalid string with ? operator."
+
+
+def test_match_regex_plus_operator():
+    """
+    Test that patterns with the plus (+) operator are correctly matched by the NFA.
+    """
+    assert matchRegex("a.b+", "ab"), "Failed to match valid string with + operator."
+    assert matchRegex("a.b+", "abb"), "Failed to match valid string with + operator."
+    assert not matchRegex("a.b+", "a"), "Incorrectly matched invalid string with + operator."
+
+
+def test_match_regex_empty_regex_error():
+    """
+    Test that an EmptyRegexError is raised when an empty regex is provided to matchRegex.
+    """
+    with pytest.raises(EmptyRegexError, match="The provided regex is empty."):
+        matchRegex("", "abc")

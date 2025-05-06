@@ -68,3 +68,11 @@ def test_shunting_yard_invalid_input():
     """
     with pytest.raises(Exception, match="Mismatched parentheses: .*"):
         shunting_yard("(a|b")
+
+
+def test_shunting_yard_invalid_character():
+    """
+    Test that the shunting yard algorithm raises PostfixError for invalid characters.
+    """
+    with pytest.raises(Exception, match="Invalid character in regex: .*"):
+        shunting_yard("a@b")
