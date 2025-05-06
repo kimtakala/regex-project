@@ -17,11 +17,11 @@ from .exceptions import (
 class UnicodeEscapeLength(Enum):
     """
     Enum representing the total length of various Unicode escape sequences.
-    This includes the backslash "\\\\" and the escape type (e.g., "x", "u", "U").
+    This includes the backslash "\\" and the escape type (e.g., "x", "u", "U").
     It is used to validate and process escape sequences in the input string.
 
     Attributes:
-        STANDARD_ESCAPE_LENGTH: Length of standard escape sequences (e.g., \\n, \\\).
+        STANDARD_ESCAPE_LENGTH: Length of standard escape sequences (e.g. \\\\ and \\n).
         HEX: Length of hexadecimal escape sequences (e.g., \\xXX).
         UNICODE_SHORT: Length of short Unicode escape sequences (e.g., \\uXXXX).
         UNICODE_LONG: Length of long Unicode escape sequences (e.g., \\UXXXXXXXX).
@@ -43,7 +43,7 @@ class TokenTypes(Enum):
     Attributes:
         LITERAL: Represents literal characters (e.g., "a", "b", "1").
         ESCAPE_SEQUENCE: Represents escape sequences (e.g., \\n, \\t).
-        CHARACTER_CLASS: Represents character classes (e.g., [a-z], \d).
+        CHARACTER_CLASS: Represents character classes (e.g., [a-z], \\d).
         CAPTURE_GROUP: Represents capture groups (e.g., (abc)).
         QUANTIFIER: Represents quantifiers (e.g., {1,3}, +, *).
         DOT: Represents the dot symbol (.) which matches any character.
@@ -517,7 +517,3 @@ class RegexTokenizer:
                 raise UnclosedGroupError("Capture Group was not closed!") from exc
 
         return token
-
-
-if __name__ == "__main__":
-    pass
