@@ -16,13 +16,13 @@ Esimerkiksi täydellisen regexin syntaxin tarkistuksessa on quantifier braces el
 kohdalla 20 eri testiä, varmistamaan että kaikki uniikit virheet havaitaan testeillä.
 Esimerkkejä näistä testeistä:
 
-| Column 1 | Column 2 |
+| rakenne | syy |
 |----------|----------|
-| Row 1    |       a   |
-| Row 2    |         a |
-| Row 3    |     a     |
-| Row 4    |      a    |
-| Row 5    |      a    |
+| a{}          | tyhjä ei sallittu |
+| a{1,a}    | vain numerot sallittu |
+| {1,3}    | edeltävä merkki on pakollinen |
+| ${1,3} | edeltävän merkin on oltava sallittua tyyppiä |
+| a{1,3    | sulkeet on suljettava |
 
 
 Testit voidaan toistaa virtuaalisen ympäristön sisältä komennolla:
