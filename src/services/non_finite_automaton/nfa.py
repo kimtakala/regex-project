@@ -17,7 +17,7 @@ class NondeterministicFiniteAutomaton:
 
 
 # Alias for NondeterministicFiniteAutomaton
-nfa = NondeterministicFiniteAutomaton
+NFA = NondeterministicFiniteAutomaton
 
 
 def follow_es(initial_state) -> Set[State]:
@@ -40,10 +40,11 @@ def follow_es(initial_state) -> Set[State]:
 
 
 def compileRegex(postfix):
+    global NFA
     """
     Compile a postfix regex expression into an NFA
     """
-    nfa_stack: List[nfa] = []
+    nfa_stack: List[NFA] = []
 
     # Handle empty regex
     if not postfix:
@@ -63,7 +64,7 @@ def compileRegex(postfix):
                 initial_state.edge2 = accept_state
                 nfa1.accept_state.edge1 = nfa1.initial_state
                 nfa1.accept_state.edge2 = accept_state
-                nfa_stack.append(nfa(initial_state, accept_state))
+                nfa_stack.append(NFA(initial_state, accept_state))
 
             case ".":
                 if len(nfa_stack) < 2:
@@ -72,7 +73,7 @@ def compileRegex(postfix):
                 nfa2 = nfa_stack.pop()
                 nfa1 = nfa_stack.pop()
                 nfa1.accept_state.edge1 = nfa2.initial_state
-                nfa_stack.append(nfa(nfa1.initial_state, nfa2.accept_state))
+                nfa_stack.append(NFA(nfa1.initial_state, nfa2.accept_state))
 
             case "|":
                 if len(nfa_stack) < 2:
@@ -86,7 +87,7 @@ def compileRegex(postfix):
                 initial_state.edge2 = nfa2.initial_state
                 nfa1.accept_state.edge1 = accept_state
                 nfa2.accept_state.edge1 = accept_state
-                nfa_stack.append(nfa(initial_state, accept_state))
+                nfa_stack.append(NFA(initial_state, accept_state))
 
             case "+":
                 if not nfa_stack:
@@ -98,7 +99,7 @@ def compileRegex(postfix):
                 initial_state.edge1 = nfa1.initial_state
                 nfa1.accept_state.edge1 = nfa1.initial_state
                 nfa1.accept_state.edge2 = accept_state
-                nfa_stack.append(nfa(initial_state, accept_state))
+                nfa_stack.append(NFA(initial_state, accept_state))
 
             case "?":
                 if not nfa_stack:
@@ -110,7 +111,7 @@ def compileRegex(postfix):
                 initial_state.edge1 = nfa1.initial_state
                 initial_state.edge2 = accept_state
                 nfa1.accept_state.edge1 = accept_state
-                nfa_stack.append(nfa(initial_state, accept_state))
+                nfa_stack.append(NFA(initial_state, accept_state))
 
             case "(" | ")":
                 raise InvalidRegexError("Parentheses should not appear in postfix notation.")
@@ -120,7 +121,7 @@ def compileRegex(postfix):
                 initial_state = State(character)
                 accept_state = State()
                 initial_state.edge1 = accept_state
-                nfa_stack.append(nfa(initial_state, accept_state))
+                nfa_stack.append(NFA(initial_state, accept_state))
 
     if len(nfa_stack) != 1:
         raise InvalidRegexError(
