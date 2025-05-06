@@ -3,7 +3,7 @@ Tests for curly braces in RegexTokenizer
 """
 
 import pytest
-from src import RegexTokenizer
+from .....src import RegexTokenizer
 from . import (
     RegexTokenizerError,
     UnclosedGroupError,

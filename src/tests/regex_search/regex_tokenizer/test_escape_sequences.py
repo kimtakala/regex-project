@@ -3,7 +3,7 @@ This is a test file for the RegexTokenizer.
 """
 
 import pytest
-from src import RegexTokenizer
+from .....src import RegexTokenizer
 from . import (
     RegexTokenizerError,
 )

@@ -3,7 +3,7 @@ This is a test file for the shunting yard algorithm.
 """
 
 import pytest
-from src.services.postfix.postfix import shunting_yard
+from ....src import shunting_yard
 
 
 def test_shunting_yard_concatenation():
