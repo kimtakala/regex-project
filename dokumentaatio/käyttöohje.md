@@ -63,4 +63,4 @@ Hyväksytään perusmerkit (a-z, A-Z, 0-9) ja erikoismerkit: ()|?\*+.
 
 Tässä esimerkki kuva siitä millaista regexiä sillä voi tarkistaa, syötät haluamasi regex lausekkeen, se kertoo sinulle noudattaako se regexin syntaxia ja jos ei niin miksi ei.
 
-![regex example image](https://example.com/image.jpg)
+![regex example image](https://github.com/kimtakala/regex-project/blob/main/dokumentaatio/kuvat/regular-expression.webp)
