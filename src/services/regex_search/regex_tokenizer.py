@@ -516,10 +516,6 @@ class RegexTokenizer:
                 # Raise an error if the capture group is not properly closed
                 raise UnclosedGroupError("Capture Group was not closed!") from exc
 
-            except Exception as exc:
-                # Raise an error for unexpected issues
-                raise NotImplementedError("Unexpected error occurred!") from exc
-
         return token
 
 

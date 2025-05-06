@@ -158,3 +158,14 @@ def test_curly_brackets_not_closed():
         match=r"Quantifier braces were not closed!",
     ):
         RegexTokenizer("a{1,3")
+
+
+def test_curly_brackets_invalid_character_in_number():
+    """
+    Test that invalid characters in quantifier braces (e.g., {1a}) raise a RegexTokenizerError.
+    """
+    with pytest.raises(
+        RegexTokenizerError,
+        match=r'Invalid symbol "a" in quantifier braces. Only digits and a comma are allowed.',
+    ):
+        RegexTokenizer("a{1,a}")
