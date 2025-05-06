@@ -31,7 +31,7 @@ poetry install --no-root
 suorita ohjelma komennolla:
 
 ```bash
-poetry run python program.py
+poetry run python regex_program.py
 ```
 
 ## Ohjeet:
