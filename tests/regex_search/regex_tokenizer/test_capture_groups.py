@@ -3,7 +3,7 @@ This is a test file for the RegexTokenizer.
 """
 
 import pytest
-from src.services.regex_search.regex_tokenizer import RegexTokenizer
+from src.services.regex_syntax_checker.regex_tokenizer import RegexTokenizer
 from . import (
     UnclosedGroupError,
 )

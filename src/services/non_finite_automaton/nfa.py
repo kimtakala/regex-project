@@ -162,13 +162,13 @@ def match_regex(infix, string):
     current_states = follow_es(nfa_result.initial_state)
 
     # Process each character in the string
-    for c in string:
+    for character in string:
         next_states = set()
 
         # For each current state
         for state in current_states:
             # If this state has a matching label
-            if state.label == c:
+            if state.label == character:
                 # Add states reachable through epsilon transitions after consuming the character
                 if state.edge1:
                     next_states.update(follow_es(state.edge1))

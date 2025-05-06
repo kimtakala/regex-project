@@ -3,7 +3,7 @@ Tests for special symbols and other characters in RegexTokenizer.
 """
 
 import pytest
-from src.services.regex_search.regex_tokenizer import RegexTokenizer
+from src.services.regex_syntax_checker.regex_tokenizer import RegexTokenizer
 
 
 def test_special_symbols():

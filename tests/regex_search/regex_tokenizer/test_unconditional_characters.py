@@ -4,7 +4,7 @@ This is a test file for the unconditional characters in RegexTokenizer.
 
 import re
 import pytest
-from src.services.regex_search.regex_tokenizer import RegexTokenizer, EndsWithBackslashError
+from src.services.regex_syntax_checker.regex_tokenizer import RegexTokenizer, EndsWithBackslashError
 
 
 def test_unconditional_characters():

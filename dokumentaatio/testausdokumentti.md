@@ -1,20 +1,14 @@
 # Testausdokumentti
 
-Tämä dokumentti määrittelee Helsingin Yliopiston Tietojenkäsittelytieteen kandiohjelman kevään 2025 4. periodin Aineopintojen Harjoitustyö: Algoritmit ja Tekoäly -kurssin projektin testauksen.
+Tämä dokumentti määrittelee Helsingin Yliopiston Tietojenkäsittelytieteen kandiohjelman kevään 2025 4.
+periodin Aineopintojen Harjoitustyö: Algoritmit ja Tekoäly -kurssin projektin testauksen.
 
-## Pylint score:
+[![GitHub CI](https://github.com/kimtakala/regex-project/actions/workflows/github_CI.yml/badge.svg)](https://github.com/kimtakala/regex-project/actions)
+[![Codecov](https://codecov.io/github/kimtakala/regex-project/graph/badge.svg?token=J0KEHXVSRQ)](https://codecov.io/github/kimtakala/regex-project)
 
-Your code has been rated at 10/10
+Projektin koodi on yksikkötestattu pytestillä ja codecovilla.
 
-## Mitä on Testattu ja miten?
+testit löytyvät projektin juuresta 'tests'-[kansiosta](https://github.com/kimtakala/regex-project/tree/main/tests)
 
-### state_machine.py
-
-Laaja kirjo syötteitä testaamaan ohjelmaa eri syötteillä, testataan myös että oikeista virheistä tulee oikeat virhe ilmoitukset.
-
----
-
-Miten testit voidaan toistaa?
-
-komennolla:
-`pytest src`
+Testit voidaan toistaa virtuaalisen ympäristön sisältä komennolla:
+`pytest`

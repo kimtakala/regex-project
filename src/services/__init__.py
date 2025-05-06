@@ -2,7 +2,7 @@
 this is an init file to form an import tree
 """
 
-from .regex_search import (
+from .regex_syntax_checker import (
     RegexTokenizer,
     TokenTypes,
     RegexTokenizerError,
