@@ -229,7 +229,6 @@ class RegexTokenizer:
                     char in string.hexdigits
                     for char in self.input_string[self.i + 2 : self.i + escape_sequence_length]
                 ):
-                    print(f"{self.input_string[self.i : -1]}")
                     raise RegexTokenizerError(
                         f'Invalid escape sequence "{self.input_string[self.i : self.i + escape_sequence_length]}" '
                         f"at index {self.i}. Expected hexadecimal characters."

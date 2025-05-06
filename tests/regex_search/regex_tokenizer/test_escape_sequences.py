@@ -39,3 +39,14 @@ def test_incomplete_escape_sequence_length_error():
         match=r"Incomplete escape sequence",
     ):
         RegexTokenizer("\\x0")
+
+
+def test_invalid_escape_sequence():
+    """
+    Test that an invalid escape sequence (e.g., \\xpp) raises a RegexTokenizerError.
+    """
+    with pytest.raises(
+        RegexTokenizerError,
+        match=r"Invalid escape sequence",
+    ):
+        RegexTokenizer("\\xpp")
