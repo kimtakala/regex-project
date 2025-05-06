@@ -3,7 +3,12 @@ This is a test file for the Nondeterministic Finite Automaton (NFA) functionalit
 """
 
 import pytest
-from ....src import compileRegex, matchRegex, InvalidRegexError, EmptyRegexError
+from src.services.non_finite_automaton import (
+    compileRegex,
+    matchRegex,
+    InvalidRegexError,
+    EmptyRegexError,
+)
 
 
 def test_compile_regex():

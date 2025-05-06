@@ -3,7 +3,7 @@ Tests for square brackets in RegexTokenizer
 """
 
 import pytest
-from .....src import RegexTokenizer
+from src import RegexTokenizer
 from . import (
     RegexTokenizerError,
     UnclosedGroupError,

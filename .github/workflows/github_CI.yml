@@ -25,6 +25,8 @@ jobs:
           poetry install
 
       - name: Run tests with coverage
+        env:
+          PYTHONPATH: src
         run: poetry run pytest
 
       - name: Upload coverage to Codecov
