@@ -20,10 +20,9 @@ pytest-cov = "^6.0.0"
 coverage = "^7.7.1"
 black = "^25.1.0"
 
-[tool.pytest.ini_options]
-addopts = "--cov=src --cov-report=term --cov-report=xml"
+[tool.pytest]
 testpaths = ["tests"]
-pythonpath = ["src"]
+python_paths = ["."]
 
 [tool.black]
 line-length = 100
