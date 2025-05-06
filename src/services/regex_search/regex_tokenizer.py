@@ -7,7 +7,6 @@ from enum import Enum
 from itertools import islice
 from .exceptions import (
     RegexTokenizerError,
-    EscapeSequenceEndError,
     EscapeSequenceLengthError,
     EndsWithBackslashError,
     UnclosedGroupError,
@@ -149,10 +148,14 @@ class RegexTokenizer:
 
                     case "{":
                         # Handle quantifiers
-                        if (
-                            self.token_types[-1]
-                            not in self.quantifier_allowed_preceding_token_types
-                        ):
+                        try:
+                            previous = self.token_types[-1]
+                        except IndexError as exc:
+                            raise RegexTokenizerError(
+                                "Quantifier braces must be preceded, by a valid token."
+                            ) from exc
+
+                        if previous not in self.quantifier_allowed_preceding_token_types:
                             raise RegexTokenizerError(
                                 "Quantifier braces must be preceded, by a valid token."
                             )
@@ -224,10 +227,11 @@ class RegexTokenizer:
             if escape_sequence_length >= UnicodeEscapeLength.HEX.value:
                 if not all(
                     char in string.hexdigits
-                    for char in self.input_string[self.i : self.i + escape_sequence_length]
+                    for char in self.input_string[self.i + 2 : self.i + escape_sequence_length]
                 ):
+                    print(f"{self.input_string[self.i : -1]}")
                     raise RegexTokenizerError(
-                        f'Invalid escape sequence "\\{self.input_string[self.i : self.i + escape_sequence_length]}" '
+                        f'Invalid escape sequence "{self.input_string[self.i : self.i + escape_sequence_length]}" '
                         f"at index {self.i}. Expected hexadecimal characters."
                     )
 
@@ -238,7 +242,7 @@ class RegexTokenizer:
             if len(token) < escape_sequence_length:
                 raise EscapeSequenceLengthError(
                     f'Incomplete escape sequence "\\{escape_type}" at index {self.i}. '
-                    f"Expected length: {escape_sequence_length}, but got {len(token)}."
+                    f"Expected length: {escape_sequence_length}, but got {len(token)}. "
                     f"Input: {self.input_string}\n"
                     f"{' ' * (7 + self.i)}{'^' * len(token)}"
                 )
@@ -248,14 +252,7 @@ class RegexTokenizer:
             return token
 
         except IndexError as exc:
-            if not escape_sequence_length:
-                raise EndsWithBackslashError('input string cannot end in a backslash "\\"') from exc
-            raise EscapeSequenceEndError(
-                f'Unexpected end of input for escape sequence "\\{escape_type}" at index {self.i}. '
-                f"Expected length: {escape_sequence_length}."
-                f"Input: {self.input_string}\n"
-                f"{' ' * (7 + self.i)}{'^' * len(token)}"
-            ) from exc
+            raise EndsWithBackslashError('input string cannot end in a backslash "\\"') from exc
 
     def __handle_square_brackets(self) -> str:
         """
@@ -366,9 +363,6 @@ class RegexTokenizer:
                         break
 
             except StopIteration as exc:
-                raise UnclosedGroupError("Squarebracket character set was not closed!") from exc
-
-            except IndexError as exc:
                 raise UnclosedGroupError("Squarebracket character set was not closed!") from exc
 
         return token
@@ -530,6 +524,4 @@ class RegexTokenizer:
 
 
 if __name__ == "__main__":
-    rt = RegexTokenizer("asd[1-9]*?32(a){5,9}xd")
-    print(rt.tokens)
-    # ['a', 's', 'd', '[1-9]', '*', '?', '3', '2', '(a)', '{5,9}', 'x', 'd']
+    pass

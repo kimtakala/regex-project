@@ -6,6 +6,8 @@ import pytest
 from src import RegexTokenizer
 from . import (
     RegexTokenizerError,
+    EscapeSequenceLengthError,
+    EscapeSequenceEndError,
 )
 
 
@@ -23,6 +25,17 @@ def test_incomplete_escape_sequence():
     """
     with pytest.raises(
         RegexTokenizerError,
-        match=r'Invalid escape sequence "\\\\x1" at index 0. Expected hexadecimal characters.',
+        match=r"Incomplete escape sequence",
     ):
-        RegexTokenizer("\\x1")
+        RegexTokenizer("\\u1")
+
+
+def test_incomplete_escape_sequence_length_error():
+    """
+    Test that incomplete escape sequences raise an EscapeSequenceLengthError.
+    """
+    with pytest.raises(
+        EscapeSequenceLengthError,
+        match=r"Incomplete escape sequence",
+    ):
+        RegexTokenizer("\\x0")

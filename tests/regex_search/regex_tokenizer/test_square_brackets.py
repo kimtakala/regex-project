@@ -3,6 +3,7 @@ Tests for square brackets in RegexTokenizer
 """
 
 import pytest
+import re
 from src import RegexTokenizer
 from . import (
     RegexTokenizerError,
@@ -67,3 +68,42 @@ def test_square_brackets_with_literal_dash():
     """
     sm = RegexTokenizer("[-abc]")
     assert sm.tokens == ["[-abc]"], "Failed to tokenize square brackets with a literal dash."
+
+
+def test_square_brackets_with_literal_dash_at_end():
+    """
+    Test that square brackets containing a literal dash at the end (e.g., [abc-]) are correctly tokenized.
+    """
+    sm = RegexTokenizer("[abc-]")
+    assert sm.tokens == [
+        "[abc-]"
+    ], "Failed to tokenize square brackets with a literal dash at the end."
+
+
+def test_square_brackets_with_literal_dash_at_start():
+    """
+    Test that square brackets containing a literal dash at the start (e.g., [-a]) are correctly tokenized.
+    """
+    sm = RegexTokenizer("[-a]")
+    assert sm.tokens == [
+        "[-a]"
+    ], "Failed to tokenize square brackets with a literal dash at the start."
+
+
+def test_square_brackets_caret_only():
+    """
+    Test that a character set with only '^' (e.g., [^]) raises a RegexTokenizerError.
+    """
+    with pytest.raises(
+        RegexTokenizerError,
+        match=re.escape('"^" cannot be the only character in a character set!'),
+    ):
+        RegexTokenizer("[^]")
+
+
+def test_square_brackets_with_only_literal_dash():
+    """
+    Test that square brackets containing only a literal dash (e.g., [-]) are correctly tokenized.
+    """
+    sm = RegexTokenizer("[-]")
+    assert sm.tokens == ["[-]"], "Failed to tokenize square brackets with only a literal dash."

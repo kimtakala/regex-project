@@ -136,3 +136,25 @@ def test_curly_brackets_with_zero_range():
     """
     sm = RegexTokenizer("a{0,0}")
     assert sm.tokens == ["a", "{0,0}"], "Failed to tokenize a quantifier with a zero range."
+
+
+def test_curly_brackets_invalid_preceding_token():
+    """
+    Test that a quantifier (e.g., {1,3}) not preceded by a valid token raises a RegexTokenizerError.
+    """
+    with pytest.raises(
+        RegexTokenizerError,
+        match=r"Quantifier braces must be preceded, by a valid token.",
+    ):
+        RegexTokenizer("{1,3}")
+
+
+def test_curly_brackets_not_closed():
+    """
+    Test that unclosed quantifier braces raises a RegexTokenizerError.
+    """
+    with pytest.raises(
+        UnclosedGroupError,
+        match=r"Quantifier braces were not closed!",
+    ):
+        RegexTokenizer("a{1,3")
