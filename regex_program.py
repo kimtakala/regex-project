@@ -270,7 +270,7 @@ def print_examples(simple_mode=True):
     print(f"{Colors.BRIGHT_YELLOW}{examples}{Colors.ENDC}")
 
 
-def loop():
+def main():
     """
     This is the main loop with three modes:
     1. Simple regex search mode (NFA-based)
@@ -334,7 +334,7 @@ def loop():
                 if regex.lower() == "vaihda":
                     in_simple_mode = False
                     print(
-                        f"{Colors.PETROL_GREEN}Vaihdettu täydelliseen regex-syntaksitilaan.{Colors.ENDC}"
+                        f"\n{Colors.PETROL_GREEN}Vaihdettu täydelliseen regex-syntaksitilaan.{Colors.ENDC}"
                     )
                     continue
 
@@ -372,7 +372,9 @@ def loop():
                     continue
                 if regex.lower() == "vaihda":
                     in_simple_mode = True
-                    print(f"{Colors.BLUE}Vaihdettu yksinkertaiseen regex-hakutilaan.{Colors.ENDC}")
+                    print(
+                        f"\n{Colors.BLUE}Vaihdettu yksinkertaiseen regex-hakutilaan.{Colors.ENDC}"
+                    )
                     continue
 
                 try:
@@ -390,8 +392,11 @@ def loop():
             while current_mode == "guide":
                 print(f"\n{Colors.DARK_ORANGE}=== OHJE TILA ==={Colors.ENDC}")
                 print(
-                    f"{Colors.DARK_ORANGE}Syötä 'o' tulostaaksesi ohjeet, 'e' esimerkit,\
-                        'vaihda' vaihtaaksesi regex-tilaa, tai '.' sulkeaksesi ohjelman.{Colors.ENDC}"
+                    f"{Colors.DARK_ORANGE}"
+                    + "Syötä 'o' tulostaaksesi ohjeet,\n"
+                    + "Syötä 'e' nähdäksesi esimerkit,\n"
+                    + "Syötä 'v' vaihtaaksesi regex-tilaa,\n"
+                    + f"Tai syötä piste '.' sulkeaksesi ohjelman.{Colors.ENDC}"
                 )
                 print(f"{Colors.DARK_ORANGE}Jätä tyhjäksi palataksesi regex-tilaan.{Colors.ENDC}")
 
@@ -402,11 +407,11 @@ def loop():
                         print_guide(in_simple_mode)
                     elif command == "e":
                         print_examples(in_simple_mode)
-                    elif command == "vaihda":
+                    elif command == "v":
                         in_simple_mode = not in_simple_mode
                         mode_str = "yksinkertaiseen" if in_simple_mode else "täydelliseen"
                         print(
-                            f"{Colors.DARK_ORANGE}Vaihdettu {mode_str} regex-tilaan.{Colors.ENDC}"
+                            f"\n{Colors.BRIGHT_YELLOW}Vaihdettu {mode_str} regex-tilaan.{Colors.ENDC}"
                         )
                     elif command == ".":
                         print(
@@ -415,7 +420,7 @@ def loop():
                         sys.exit()
                     else:
                         print(
-                            f'{Colors.DARK_RED}Virheellinen komento. Syötä "o", "e", "vaihda", "." tai tyhjä.{Colors.ENDC}'
+                            f'{Colors.DARK_RED}Virheellinen komento. Syötä "o", "e", "v", "." tai tyhjä.{Colors.ENDC}'
                         )
                 else:
                     # Switch back to regex mode
@@ -433,4 +438,4 @@ def loop():
 
 
 if __name__ == "__main__":
-    loop()
+    main()

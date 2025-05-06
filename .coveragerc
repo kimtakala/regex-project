@@ -2,4 +2,4 @@
 source = src
 omit = 
     src/services/input_string/*
-    src/program.py
+    regex_program.py
