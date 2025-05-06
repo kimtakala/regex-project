@@ -1,5 +1,5 @@
 from typing import List, Set
-from services import shunting_yard as shunt
+from src.services import shunting_yard as shunt
 from .exceptions import InvalidRegexError, EmptyRegexError
 
 
