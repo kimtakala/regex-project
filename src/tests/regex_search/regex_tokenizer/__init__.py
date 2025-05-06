@@ -2,7 +2,7 @@
 this is an init file to form an import tree
 """
 
-from .. import (
+from src.services.regex_search import (
     RegexTokenizerError,
     EndsWithBackslashError,
     EscapeSequenceEndError,
