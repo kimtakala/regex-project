@@ -2,25 +2,25 @@
 
 ## Ohjelman asennus
 
-lataa projekti omalle tietokoneelle:
+Lataa projekti omalle tietokoneelle:
 
 ```bash
 git clone git@github.com:kimtakala/regex-project.git
 ```
 
-siirry projektin juureen:
+Siirry projektin juureen:
 
 ```bash
 cd regex-project
 ```
 
-asenna poetry:
+Asenna poetry:
 
 ```bash
 pip install poetry
 ```
 
-asenna riippuvuudet:
+Asenna riippuvuudet:
 
 ```bash
 poetry install --no-root
@@ -28,11 +28,13 @@ poetry install --no-root
 
 ## Ohjelman suorittaminen
 
-suorita ohjelma komennolla:
+Suorita ohjelma komennolla:
 
 ```bash
 poetry run python regex_program.py
 ```
+
+Ohjelma suljetaan näppäin yhdistelmällä `ctrl+c` tai ohjetilassa syöttämällä: `.`
 
 ## Ohjeet:
 
