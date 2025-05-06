@@ -1,9 +1,17 @@
+"""
+This file set's up a non-deterministic finite automaton and uses it to compile regex.
+"""
+
 from typing import List, Set
-from src.services import shunting_yard as shunt
+from src.services.postfix.postfix import shunting_yard as shunt
 from .exceptions import InvalidRegexError, EmptyRegexError
 
 
 class State:
+    """
+    This is a class for the state of an nfa.
+    """
+
     def __init__(self, label=None):
         self.label = label  # Character label, None for epsilon
         self.edge1 = None  # First transition
@@ -11,6 +19,10 @@ class State:
 
 
 class NondeterministicFiniteAutomaton:
+    """
+    this is a nfa class, for processing regex.
+    """
+
     def __init__(self, initial_state=None, accept_state=None):
         self.initial_state = initial_state
         self.accept_state = accept_state
@@ -39,10 +51,9 @@ def follow_es(initial_state) -> Set[State]:
     return states
 
 
-def compileRegex(postfix):
-    global NFA
+def compile_regex(postfix):
     """
-    Compile a postfix regex expression into an NFA
+    Compile a postfix regex expression into an NFA.
     """
     nfa_stack: List[NFA] = []
 
@@ -131,7 +142,7 @@ def compileRegex(postfix):
     return nfa_stack.pop()
 
 
-def matchRegex(infix, string):
+def match_regex(infix, string):
     """
     Match a string against a regex pattern
     """
@@ -145,7 +156,7 @@ def matchRegex(infix, string):
         raise EmptyRegexError("The provided regex is empty.")
 
     # Build the NFA
-    nfa_result = compileRegex(postfix)
+    nfa_result = compile_regex(postfix)
 
     # Start with the initial state and follow all epsilon transitions
     current_states = follow_es(nfa_result.initial_state)

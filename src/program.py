@@ -8,13 +8,13 @@ import os
 import sys
 from sys import stdout
 from time import sleep
+from src.services import match_regex, EmptyRegexError, InvalidRegexError, RegexTokenizer
 
 # Dynamically add the project root directory to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.services import matchRegex, EmptyRegexError, InvalidRegexError, RegexTokenizer
 
 # Define spacing for alignment
 GUIDE_SPACING = 15
@@ -331,7 +331,7 @@ def loop():
                 if not regex:
                     current_mode = "guide"
                     continue
-                elif regex.lower() == "vaihda":
+                if regex.lower() == "vaihda":
                     in_simple_mode = False
                     print(
                         f"{Colors.PETROL_GREEN}Vaihdettu täydelliseen regex-syntaksitilaan.{Colors.ENDC}"
@@ -343,7 +343,7 @@ def loop():
 
                 try:
                     # Use the matchRegex function from nfa.py
-                    result = matchRegex(regex, text)
+                    result = match_regex(regex, text)
                     if result:
                         print(
                             f"{Colors.PURPLE}Teksti '{text}' vastaa lauseketta '{regex}'!{Colors.ENDC}"
@@ -370,7 +370,7 @@ def loop():
                 if not regex:
                     current_mode = "guide"
                     continue
-                elif regex.lower() == "vaihda":
+                if regex.lower() == "vaihda":
                     in_simple_mode = True
                     print(f"{Colors.BLUE}Vaihdettu yksinkertaiseen regex-hakutilaan.{Colors.ENDC}")
                     continue
@@ -390,7 +390,8 @@ def loop():
             while current_mode == "guide":
                 print(f"\n{Colors.DARK_ORANGE}=== OHJE TILA ==={Colors.ENDC}")
                 print(
-                    f"{Colors.DARK_ORANGE}Syötä 'o' tulostaaksesi ohjeet, 'e' esimerkit, 'vaihda' vaihtaaksesi regex-tilaa, tai '.' sulkeaksesi ohjelman.{Colors.ENDC}"
+                    f"{Colors.DARK_ORANGE}Syötä 'o' tulostaaksesi ohjeet, 'e' esimerkit,\
+                        'vaihda' vaihtaaksesi regex-tilaa, tai '.' sulkeaksesi ohjelman.{Colors.ENDC}"
                 )
                 print(f"{Colors.DARK_ORANGE}Jätä tyhjäksi palataksesi regex-tilaan.{Colors.ENDC}")
 

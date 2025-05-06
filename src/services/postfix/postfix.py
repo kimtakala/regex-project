@@ -1,3 +1,8 @@
+"""
+This is a module for converting text
+into postfix notation with the shunting yard algorithm.
+"""
+
 from .exceptions import MismatchedParenthesesError, PostfixError
 
 

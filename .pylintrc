@@ -398,6 +398,9 @@ known-third-party=enchant
 preferred-modules=
 
 
+[MESSAGE CONTROL]
+disable=C0117
+
 [LOGGING]
 
 # The type of string formatting that logging methods do. `old` means using %
