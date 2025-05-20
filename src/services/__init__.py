@@ -11,6 +11,5 @@ from .regex_syntax_checker import (
     EscapeSequenceLengthError,
     UnclosedGroupError,
 )
-from .input_string import user_input
 from .postfix import shunting_yard
 from .non_finite_automaton import InvalidRegexError, EmptyRegexError, compile_regex, match_regex

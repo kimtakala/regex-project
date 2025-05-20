@@ -24,5 +24,6 @@ Esimerkkejä näistä testeistä:
 | ${1,3}  | edeltävän merkin on oltava sallittua tyyppiä |
 | a{1,3   | sulkeet on suljettava                        |
 
+
 Testit voidaan toistaa virtuaalisen ympäristön sisältä komennolla:
 `pytest`
