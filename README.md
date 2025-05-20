@@ -9,7 +9,7 @@ Tämä on "_Aineopintojen harjoitustyö: Algoritmit ja tekoäly_" -kurssin proje
 - [Määrittelydokumentti](./dokumentaatio/maarittelydokumentti.md)
     - Sisältää projektin määrittelyn ja vaatimukset.
 
-- [Käyttöohje](./dokumentaatio/kayttoohje.md)
+- [Käyttöohje](./dokumentaatio/käyttöohje.md)
   - Sovelluksen käyttöohjeet.
 
 - [Testausdokumentti](./dokumentaatio/testausdokumentti.md)
